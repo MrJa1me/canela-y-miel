@@ -1,0 +1,36 @@
+# Base de datos de Canela & Miel.
+# Los valores salen del archivo .env de la raíz.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: canela-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      # Volumen con los datos: sobrevive a "docker compose down".
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Interfaz web para mirar la base de datos en http://localhost:8081
+  adminer:
+    image: adminer:4
+    container_name: canela-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

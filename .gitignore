@@ -1,0 +1,19 @@
+# Dependencias y builds
+node_modules/
+dist/
+target/
+*.log
+
+# Material de referencia del curso: no se edita ni se entrega
+base/
+
+# Credenciales (el .env real nunca se sube)
+.env
+.env.local
+
+# IDE y sistema operativo
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
