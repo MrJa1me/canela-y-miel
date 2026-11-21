@@ -1,0 +1,183 @@
+package cl.canelaymiel.service;
+
+import cl.canelaymiel.dto.CambioEstadoRequest;
+import cl.canelaymiel.dto.DetallePedidoRequest;
+import cl.canelaymiel.dto.PedidoRequest;
+import cl.canelaymiel.dto.PedidoResponse;
+import cl.canelaymiel.exception.AccesoDenegadoException;
+import cl.canelaymiel.exception.ConflictoException;
+import cl.canelaymiel.exception.DatosInvalidosException;
+import cl.canelaymiel.exception.RecursoNoEncontradoException;
+import cl.canelaymiel.model.Cupon;
+import cl.canelaymiel.model.DetallePedido;
+import cl.canelaymiel.model.EstadoPedido;
+import cl.canelaymiel.model.Pedido;
+import cl.canelaymiel.model.Producto;
+import cl.canelaymiel.model.Usuario;
+import cl.canelaymiel.repository.CuponRepository;
+import cl.canelaymiel.repository.EstadoPedidoRepository;
+import cl.canelaymiel.repository.PedidoRepository;
+import cl.canelaymiel.repository.ProductoRepository;
+import cl.canelaymiel.repository.UsuarioRepository;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class PedidoService {
+
+    private static final BigDecimal ENVIO = new BigDecimal("8000");
+    private static final BigDecimal DESCUENTO_PREMIUM = new BigDecimal("0.10");
+
+    private final PedidoRepository pedidoRepository;
+    private final ProductoRepository productoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CuponRepository cuponRepository;
+    private final EstadoPedidoRepository estadoPedidoRepository;
+
+    @Transactional(readOnly = true)
+    public List<PedidoResponse> listar(Usuario autenticado) {
+        List<Pedido> pedidos = esAdmin(autenticado)
+                ? pedidoRepository.findAll()
+                : pedidoRepository.findByClienteId(autenticado.getId());
+
+        return pedidos.stream().map(PedidoResponse::desde).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PedidoResponse obtener(Long id, Usuario autenticado) {
+        Pedido pedido = buscar(id);
+
+        if (!esAdmin(autenticado) && !pedido.getCliente().getId().equals(autenticado.getId())) {
+            throw new AccesoDenegadoException("No puedes ver un pedido de otro cliente");
+        }
+
+        return PedidoResponse.desde(pedido);
+    }
+
+    @Transactional
+    public PedidoResponse crear(PedidoRequest request, Usuario autenticado) {
+        if (!esAdmin(autenticado) && !request.clienteId().equals(autenticado.getId())) {
+            throw new AccesoDenegadoException("Solo puedes crear pedidos para tu propia cuenta");
+        }
+
+        Usuario cliente = usuarioRepository.findById(request.clienteId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Cliente no encontrado"));
+
+        if (!cliente.isActivo()) {
+            throw new DatosInvalidosException("El cliente está inactivo");
+        }
+
+        EstadoPedido estadoInicial = estadoPedidoRepository.findByOrden(1)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe el estado inicial del pedido"));
+
+        Cupon cupon = buscarCupon(request.cuponCodigo());
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(cliente);
+        pedido.setEstado(estadoInicial);
+        pedido.setFecha(LocalDateTime.now());
+        pedido.setCupon(cupon);
+
+        BigDecimal subtotal = BigDecimal.ZERO;
+
+        for (DetallePedidoRequest item : request.detalles()) {
+            Producto producto = productoRepository.findById(item.productoId())
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado: " + item.productoId()));
+
+            if (!producto.isActivo()) {
+                throw new DatosInvalidosException("El producto " + producto.getNombre() + " no está disponible");
+            }
+
+            if (producto.getStock() < item.cantidad()) {
+                throw new ConflictoException("Stock insuficiente para " + producto.getNombre());
+            }
+
+            // Descuento de stock: si algo falla después, la transacción lo revierte.
+            producto.setStock(producto.getStock() - item.cantidad());
+
+            BigDecimal linea = producto.getPrecio().multiply(BigDecimal.valueOf(item.cantidad()));
+
+            DetallePedido detalle = new DetallePedido();
+            detalle.setProducto(producto);
+            detalle.setCantidad(item.cantidad());
+            detalle.setPrecioUnitario(producto.getPrecio());
+            detalle.setSubtotal(linea);
+            pedido.agregarDetalle(detalle);
+
+            subtotal = subtotal.add(linea);
+        }
+
+        // Primero el 10% Premium, luego el cupón sobre el saldo.
+        BigDecimal descuentoPremium = cliente.isPremium() ? subtotal.multiply(DESCUENTO_PREMIUM) : BigDecimal.ZERO;
+        BigDecimal saldo = subtotal.subtract(descuentoPremium);
+        BigDecimal descuentoCupon = cupon == null
+                ? BigDecimal.ZERO
+                : saldo.multiply(BigDecimal.valueOf(cupon.getPorcentaje())).divide(BigDecimal.valueOf(100));
+        BigDecimal descuento = descuentoPremium.add(descuentoCupon).setScale(0, RoundingMode.HALF_UP);
+
+        pedido.setSubtotal(subtotal);
+        pedido.setDescuento(descuento);
+        pedido.setEnvio(ENVIO);
+        pedido.setTotal(subtotal.subtract(descuento).add(ENVIO).setScale(0, RoundingMode.HALF_UP));
+
+        return PedidoResponse.desde(pedidoRepository.save(pedido));
+    }
+
+    @Transactional
+    public PedidoResponse cambiarEstado(Long id, CambioEstadoRequest request) {
+        Pedido pedido = buscar(id);
+
+        EstadoPedido siguiente = estadoPedidoRepository.findByOrden(pedido.getEstado().getOrden() + 1)
+                .orElseThrow(() -> new ConflictoException("El pedido ya está en el último estado"));
+
+        if (!siguiente.getNombre().equalsIgnoreCase(request.estado().trim())) {
+            throw new ConflictoException("El siguiente estado es " + siguiente.getNombre());
+        }
+
+        pedido.setEstado(siguiente);
+        return PedidoResponse.desde(pedido);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        Pedido pedido = buscar(id);
+
+        // Devolver el stock antes de borrar el pedido.
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            Producto producto = detalle.getProducto();
+            producto.setStock(producto.getStock() + detalle.getCantidad());
+        }
+
+        pedidoRepository.delete(pedido);
+    }
+
+    private boolean esAdmin(Usuario usuario) {
+        return "ADMIN".equals(usuario.getRol().getNombre());
+    }
+
+    private Pedido buscar(Long id) {
+        return pedidoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pedido no encontrado"));
+    }
+
+    private Cupon buscarCupon(String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            return null;
+        }
+
+        Cupon cupon = cuponRepository.findByCodigoIgnoreCase(codigo.trim())
+                .orElseThrow(() -> new DatosInvalidosException("El cupón no existe"));
+
+        if (!cupon.isActivo()) {
+            throw new DatosInvalidosException("El cupón está inactivo");
+        }
+
+        return cupon;
+    }
+}
