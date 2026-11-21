@@ -1,0 +1,46 @@
+import { Link, NavLink, Outlet } from 'react-router-dom'
+
+const claseEnlace = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
+
+// Marco del panel de administración: cabecera, menú lateral y contenido.
+export default function LayoutAdmin() {
+  return (
+    <div className="d-flex flex-column min-vh-100">
+      <header className="navbar-canela py-3" data-bs-theme="dark">
+        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <Link className="text-light text-decoration-none fw-semibold" to="/admin">
+            Canela &amp; Miel · Administración
+          </Link>
+          <Link className="btn btn-sm btn-outline-light" to="/">
+            Ir a la tienda
+          </Link>
+        </div>
+      </header>
+
+      <div className="container-fluid flex-grow-1 d-flex">
+        <div className="row flex-grow-1 w-100">
+          <aside className="col-12 col-md-3 col-lg-2 bg-white border-end p-3">
+            <nav className="nav flex-column gap-1">
+              <NavLink className={claseEnlace} to="/admin" end>
+                Dashboard
+              </NavLink>
+              <NavLink className={claseEnlace} to="/admin/inventario">
+                Inventario
+              </NavLink>
+              <NavLink className={claseEnlace} to="/admin/pedidos">
+                Pedidos
+              </NavLink>
+              <NavLink className={claseEnlace} to="/admin/usuarios">
+                Usuarios
+              </NavLink>
+            </nav>
+          </aside>
+
+          <main className="col-12 col-md-9 col-lg-10 p-4">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </div>
+  )
+}

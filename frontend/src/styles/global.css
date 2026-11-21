@@ -1,0 +1,50 @@
+/* Estilos base compartidos por toda la aplicación. */
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-neutral);
+  color: var(--color-ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+.navbar-canela {
+  background-color: var(--color-tertiary);
+}
+
+.footer-canela {
+  background-color: var(--color-inverted);
+  color: var(--color-neutral);
+}
+
+/* Los títulos del pie deben contrastar con el fondo oscuro. */
+.footer-canela :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-neutral);
+}
+
+/* Enlaces del menú lateral del admin. */
+.nav-link {
+  color: var(--color-ink);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--color-secondary);
+}
+
+.nav-link.active {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+/* Contenedor del gráfico de barras del dashboard. */
+.grafico {
+  height: 220px;
+}
