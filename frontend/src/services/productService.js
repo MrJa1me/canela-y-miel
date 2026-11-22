@@ -1,26 +1,17 @@
-import { datosProductos } from './datosLocales'
+import { solicitar } from './api'
 
-// Copia en memoria: los cambios se pierden al recargar hasta la Fase 4.
-let productos = [...datosProductos]
-
-export async function listarProductos() {
-  return [...productos]
+export function listarProductos() {
+  return solicitar('/productos')
 }
 
-export async function crearProducto(datos) {
-  const id = Math.max(0, ...productos.map((producto) => producto.id)) + 1
-  const nuevo = { ...datos, id }
-  productos = [...productos, nuevo]
-  return { ...nuevo }
+export function crearProducto(datos) {
+  return solicitar('/productos', { method: 'POST', body: datos })
 }
 
-export async function actualizarProducto(id, datos) {
-  productos = productos.map((producto) => (producto.id === id ? { ...producto, ...datos } : producto))
-  const actualizado = productos.find((producto) => producto.id === id)
-  if (!actualizado) throw new Error('Producto no encontrado')
-  return { ...actualizado }
+export function actualizarProducto(id, datos) {
+  return solicitar(`/productos/${id}`, { method: 'PUT', body: datos })
 }
 
-export async function eliminarProducto(id) {
-  productos = productos.filter((producto) => producto.id !== id)
+export function eliminarProducto(id) {
+  return solicitar(`/productos/${id}`, { method: 'DELETE' })
 }

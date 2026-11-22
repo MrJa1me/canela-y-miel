@@ -1,28 +1,35 @@
-import { datosPedidos, ESTADOS_PEDIDO } from './datosLocales'
+import { solicitar } from './api'
 
-let pedidos = [...datosPedidos]
+export const ESTADOS_PEDIDO = [
+  'Recibido',
+  'En preparación',
+  'Listo para despacho',
+  'En camino',
+  'Entregado',
+]
 
-export { ESTADOS_PEDIDO }
-
-export async function listarPedidos() {
-  return [...pedidos]
+export function listarPedidos() {
+  return solicitar('/pedidos')
 }
 
-// Devuelve el estado que sigue en el flujo, o null si el pedido ya terminó.
+export function crearPedido(datos) {
+  return solicitar('/pedidos', { method: 'POST', body: datos })
+}
+
+// Devuelve el estado que sigue en el flujo, o null si ya terminó.
 export function estadoSiguiente(estado) {
   const posicion = ESTADOS_PEDIDO.indexOf(estado)
   const esUltimo = posicion === ESTADOS_PEDIDO.length - 1
   return posicion === -1 || esUltimo ? null : ESTADOS_PEDIDO[posicion + 1]
 }
 
-// Regla de negocio: un pedido solo avanza al estado siguiente del flujo.
-export async function avanzarEstado(id) {
-  const pedido = pedidos.find((item) => item.id === id)
-  if (!pedido) throw new Error('Pedido no encontrado')
-
+// El backend valida el orden; aquí solo se arma el estado destino.
+export function avanzarEstado(pedido) {
   const siguiente = estadoSiguiente(pedido.estado)
-  if (!siguiente) throw new Error('El pedido ya fue entregado')
+  if (!siguiente) return Promise.reject(new Error('El pedido ya fue entregado'))
 
-  pedidos = pedidos.map((item) => (item.id === id ? { ...item, estado: siguiente } : item))
-  return { ...pedido, estado: siguiente }
+  return solicitar(`/pedidos/${pedido.id}/estado`, {
+    method: 'PATCH',
+    body: { estado: siguiente },
+  })
 }

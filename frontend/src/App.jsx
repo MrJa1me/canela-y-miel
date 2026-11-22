@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import LayoutCliente from './components/LayoutCliente'
 import LayoutAdmin from './components/LayoutAdmin'
+import ProtectedRoute from './components/ProtectedRoute'
 import Inicio from './pages/cliente/Inicio'
 import Catalogo from './pages/cliente/Catalogo'
 import Carrito from './pages/cliente/Carrito'
@@ -22,18 +23,25 @@ export default function App() {
         <Route index element={<Inicio />} />
         <Route path="catalogo" element={<Catalogo />} />
         <Route path="carrito" element={<Carrito />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="perfil" element={<Perfil />} />
-        <Route path="seguimiento" element={<Seguimiento />} />
         <Route path="login" element={<Login />} />
         <Route path="registro" element={<Registro />} />
+
+        {/* Solo con sesión iniciada */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="perfil" element={<Perfil />} />
+          <Route path="seguimiento" element={<Seguimiento />} />
+        </Route>
       </Route>
 
-      <Route path="/admin" element={<LayoutAdmin />}>
-        <Route index element={<Dashboard />} />
-        <Route path="inventario" element={<Inventario />} />
-        <Route path="pedidos" element={<Pedidos />} />
-        <Route path="usuarios" element={<Usuarios />} />
+      {/* Solo ADMIN */}
+      <Route element={<ProtectedRoute roles={['ADMIN']} />}>
+        <Route path="/admin" element={<LayoutAdmin />}>
+          <Route index element={<Dashboard />} />
+          <Route path="inventario" element={<Inventario />} />
+          <Route path="pedidos" element={<Pedidos />} />
+          <Route path="usuarios" element={<Usuarios />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFound />} />

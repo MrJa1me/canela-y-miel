@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CATEGORIAS, IMAGENES } from '../../services/datosLocales'
+import { listarCategorias } from '../../services/categoriaService'
 import {
   actualizarProducto,
   crearProducto,
@@ -9,25 +9,45 @@ import {
 
 const formatearPrecio = (valor) => `$${valor.toLocaleString('es-CL')}`
 
+// Imágenes copiadas del prototipo a public/img.
+const IMAGENES = [
+  { archivo: '/img/chocolate.jpg', nombre: 'Torta de chocolate' },
+  { archivo: '/img/tartaleta.jpg', nombre: 'Tartaleta' },
+  { archivo: '/img/pancakes.png', nombre: 'Pancakes' },
+  { archivo: '/img/cheesecake.jpg', nombre: 'Cheesecake' },
+  { archivo: '/img/tres_leches.jpg', nombre: 'Tres leches' },
+  { archivo: '/img/zanahoria.jpg', nombre: 'Pastel de zanahoria' },
+  { archivo: '/img/macarons.jpg', nombre: 'Macarons' },
+  { archivo: '/img/mapa.jpg', nombre: 'Mapa' },
+]
+
 const FORMULARIO_VACIO = {
   nombre: '',
-  categoria: CATEGORIAS[0],
+  categoriaId: '',
   precio: '',
   stock: '',
   imagen: IMAGENES[0].archivo,
+  activo: true,
 }
 
 export default function Inventario() {
   const [productos, setProductos] = useState(null)
+  const [categorias, setCategorias] = useState([])
   const [formulario, setFormulario] = useState(null) // null = formulario cerrado
   const [editandoId, setEditandoId] = useState(null)
+  const [error, setError] = useState('')
 
   async function cargar() {
-    setProductos(await listarProductos())
+    const [listaProductos, listaCategorias] = await Promise.all([
+      listarProductos(),
+      listarCategorias(),
+    ])
+    setProductos(listaProductos)
+    setCategorias(listaCategorias)
   }
 
   useEffect(() => {
-    cargar()
+    cargar().catch((fallo) => setError(fallo.message))
   }, [])
 
   function abrirNuevo() {
@@ -39,10 +59,11 @@ export default function Inventario() {
     setEditandoId(producto.id)
     setFormulario({
       nombre: producto.nombre,
-      categoria: producto.categoria,
+      categoriaId: String(producto.categoriaId),
       precio: String(producto.precio),
       stock: String(producto.stock),
       imagen: producto.imagen,
+      activo: producto.activo,
     })
   }
 
@@ -56,28 +77,38 @@ export default function Inventario() {
 
     const datos = {
       nombre: formulario.nombre.trim(),
-      categoria: formulario.categoria,
+      categoriaId: Number(formulario.categoriaId),
       precio: Number(formulario.precio),
       stock: Number(formulario.stock),
       imagen: formulario.imagen,
+      activo: formulario.activo,
     }
 
-    if (editandoId) {
-      await actualizarProducto(editandoId, datos)
-    } else {
-      await crearProducto(datos)
+    try {
+      if (editandoId) {
+        await actualizarProducto(editandoId, datos)
+      } else {
+        await crearProducto(datos)
+      }
+      cerrarFormulario()
+      await cargar()
+    } catch {
+      // El mensaje ya lo mostró el manejador central de errores.
     }
-
-    cerrarFormulario()
-    await cargar()
   }
 
   async function borrar(producto) {
     if (!window.confirm(`¿Eliminar "${producto.nombre}"?`)) return
-    await eliminarProducto(producto.id)
-    await cargar()
+
+    try {
+      await eliminarProducto(producto.id)
+      await cargar()
+    } catch {
+      // El mensaje ya lo mostró el manejador central de errores.
+    }
   }
 
+  if (error) return <p className="text-danger">{error}</p>
   if (!productos) return <p>Cargando…</p>
 
   return (
@@ -112,11 +143,13 @@ export default function Inventario() {
                   <select
                     className="form-select"
                     id="categoria"
-                    value={formulario.categoria}
-                    onChange={(evento) => setFormulario({ ...formulario, categoria: evento.target.value })}
+                    value={formulario.categoriaId}
+                    onChange={(evento) => setFormulario({ ...formulario, categoriaId: evento.target.value })}
+                    required
                   >
-                    {CATEGORIAS.map((categoria) => (
-                      <option key={categoria} value={categoria}>{categoria}</option>
+                    <option value="">Selecciona…</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>
                     ))}
                   </select>
                 </div>
