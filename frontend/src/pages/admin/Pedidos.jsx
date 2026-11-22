@@ -14,24 +14,26 @@ const CLASE_ESTADO = {
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
+  const [error, setError] = useState('')
 
   async function cargar() {
     setPedidos(await listarPedidos())
   }
 
   useEffect(() => {
-    cargar()
+    cargar().catch((fallo) => setError(fallo.message))
   }, [])
 
-  async function avanzar(id) {
+  async function avanzar(pedido) {
     try {
-      await avanzarEstado(id)
+      await avanzarEstado(pedido)
       await cargar()
-    } catch (error) {
-      window.alert(error.message)
+    } catch {
+      // El mensaje ya lo mostró el manejador central de errores.
     }
   }
 
+  if (error) return <p className="text-danger">{error}</p>
   if (!pedidos) return <p>Cargando…</p>
 
   const visibles = filtro === 'Todos' ? pedidos : pedidos.filter((pedido) => pedido.estado === filtro)
@@ -74,14 +76,14 @@ export default function Pedidos() {
                   <tr key={pedido.id}>
                     <td>#{pedido.id}</td>
                     <td>{pedido.cliente}</td>
-                    <td>{pedido.fecha}</td>
+                    <td>{pedido.fecha?.slice(0, 10)}</td>
                     <td className="text-end">{formatearPrecio(pedido.total)}</td>
                     <td>
                       <span className={`badge ${CLASE_ESTADO[pedido.estado]}`}>{pedido.estado}</span>
                     </td>
                     <td className="text-end">
                       {siguiente ? (
-                        <button className="btn btn-sm btn-outline-primary" type="button" onClick={() => avanzar(pedido.id)}>
+                        <button className="btn btn-sm btn-outline-primary" type="button" onClick={() => avanzar(pedido)}>
                           Pasar a {siguiente}
                         </button>
                       ) : (

@@ -1,9 +1,18 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 // Devuelve la clase de Bootstrap para marcar el enlace activo.
 const claseEnlace = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
 
 export default function NavBar() {
+  const { usuario, cerrarSesion } = useAuth()
+  const navegar = useNavigate()
+
+  function salir() {
+    cerrarSesion()
+    navegar('/')
+  }
+
   return (
     <nav className="navbar navbar-expand-lg navbar-canela" data-bs-theme="dark">
       <div className="container">
@@ -24,7 +33,7 @@ export default function NavBar() {
         </button>
 
         <div className="collapse navbar-collapse" id="menuPrincipal">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav ms-auto align-items-lg-center">
             <li className="nav-item">
               <NavLink className={claseEnlace} to="/" end>
                 Inicio
@@ -40,16 +49,50 @@ export default function NavBar() {
                 Carrito
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink className={claseEnlace} to="/perfil">
-                Mi perfil
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className={claseEnlace} to="/seguimiento">
-                Seguimiento
-              </NavLink>
-            </li>
+
+            {usuario ? (
+              <>
+                <li className="nav-item">
+                  <NavLink className={claseEnlace} to="/perfil">
+                    Mi perfil
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={claseEnlace} to="/seguimiento">
+                    Seguimiento
+                  </NavLink>
+                </li>
+                {usuario.rol === 'ADMIN' && (
+                  <li className="nav-item">
+                    <NavLink className={claseEnlace} to="/admin">
+                      Panel admin
+                    </NavLink>
+                  </li>
+                )}
+                <li className="nav-item">
+                  <button
+                    type="button"
+                    className="nav-link bg-transparent border-0"
+                    onClick={salir}
+                  >
+                    Salir
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <NavLink className={claseEnlace} to="/login">
+                    Iniciar sesión
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={claseEnlace} to="/registro">
+                    Registrarse
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

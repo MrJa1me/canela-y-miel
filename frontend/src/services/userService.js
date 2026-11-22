@@ -1,18 +1,14 @@
-import { datosUsuarios } from './datosLocales'
+import { solicitar } from './api'
 
-const ROLES = ['ADMIN', 'CLIENTE']
-
-let usuarios = [...datosUsuarios]
-
-export async function listarUsuarios() {
-  return [...usuarios]
+export function listarUsuarios() {
+  return solicitar('/usuarios')
 }
 
-export async function actualizarRol(id, rol) {
-  if (!ROLES.includes(rol)) throw new Error('Rol no válido')
-
-  usuarios = usuarios.map((usuario) => (usuario.id === id ? { ...usuario, rol } : usuario))
-  const actualizado = usuarios.find((usuario) => usuario.id === id)
-  if (!actualizado) throw new Error('Usuario no encontrado')
-  return { ...actualizado }
+// El backend pide el usuario completo; la contraseña se omite para no cambiarla.
+export function actualizarRol(usuario, rol) {
+  const { id, nombre, correo, premium, activo } = usuario
+  return solicitar(`/usuarios/${id}`, {
+    method: 'PUT',
+    body: { nombre, correo, rol, premium, activo },
+  })
 }

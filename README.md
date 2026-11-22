@@ -100,6 +100,20 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 - La clave para firmar los tokens está en `JWT_SECRET` (`.env`).
 - En Swagger: ejecuta `POST /auth/login`, copia el `token` y pégalo en **Authorize**.
 
+### Sesión en el frontend
+
+- Al iniciar sesión se guardan `canela.token`, `canela.refreshToken` y `canela.usuario` en `localStorage`.
+- Al recargar, `AuthContext` valida la sesión con `GET /auth/perfil`.
+- Si el token de acceso venció (401), `api.js` lo renueva con `/auth/refresh` y repite la petición una sola vez.
+- Si el refresh también falla, se cierra la sesión y el guard manda a `/login`.
+- `/admin` exige rol **ADMIN**; Perfil, Checkout y Seguimiento exigen tener sesión.
+
+## Documentos
+
+- [Documento de integración](docs/integracion/documento-integracion.md)
+- [ERS final](docs/ers/ERS-Canela-y-Miel.md)
+- Manual de usuario y reporte de cobertura: pendientes (los prepara la otra integrante).
+
 ## Estructura
 
 ```

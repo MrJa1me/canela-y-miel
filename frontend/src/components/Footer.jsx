@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function Footer() {
+  const { usuario } = useAuth()
+
   return (
     <footer className="footer-canela py-4 mt-auto">
       <div className="container">
@@ -16,9 +19,11 @@ export default function Footer() {
           </div>
 
           <div className="col-12 col-md-2 text-md-end">
-            <Link className="link-light small" to="/admin">
-              Administración
-            </Link>
+            {usuario?.rol === 'ADMIN' && (
+              <Link className="link-light small" to="/admin">
+                Administración
+              </Link>
+            )}
           </div>
         </div>
 

@@ -3,24 +3,31 @@ import { actualizarRol, listarUsuarios } from '../../services/userService'
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState(null)
+  const [error, setError] = useState('')
 
   async function cargar() {
     setUsuarios(await listarUsuarios())
   }
 
   useEffect(() => {
-    cargar()
+    cargar().catch((fallo) => setError(fallo.message))
   }, [])
 
-  async function cambiarRol(id, rol) {
+  async function cambiarRol(usuario, rol) {
     try {
-      await actualizarRol(id, rol)
+      await actualizarRol(usuario, rol)
       await cargar()
-    } catch (error) {
-      window.alert(error.message)
+    } catch {
+      // Si falla, se recarga para que el selector vuelva al rol real.
+      try {
+        await cargar()
+      } catch {
+        // Sin conexión: el mensaje ya se mostró.
+      }
     }
   }
 
+  if (error) return <p className="text-danger">{error}</p>
   if (!usuarios) return <p>Cargando…</p>
 
   return (
@@ -55,7 +62,7 @@ export default function Usuarios() {
                       className="form-select form-select-sm"
                       aria-label={`Rol de ${usuario.nombre}`}
                       value={usuario.rol}
-                      onChange={(evento) => cambiarRol(usuario.id, evento.target.value)}
+                      onChange={(evento) => cambiarRol(usuario, evento.target.value)}
                     >
                       <option value="ADMIN">ADMIN</option>
                       <option value="CLIENTE">CLIENTE</option>
