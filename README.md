@@ -108,6 +108,12 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 - Si el refresh también falla, se cierra la sesión y el guard manda a `/login`.
 - `/admin` exige rol **ADMIN**; Perfil, Checkout y Seguimiento exigen tener sesión.
 
+## Documentos
+
+- [Documento de integración](docs/integracion/documento-integracion.md)
+- [ERS final](docs/ers/ERS-Canela-y-Miel.md)
+- Manual de usuario y reporte de cobertura: pendientes (los prepara la otra integrante).
+
 ## Estructura
 
 ```
