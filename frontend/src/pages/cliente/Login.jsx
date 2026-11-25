@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import FormField from '../../components/FormField'
+import { esCampoObligatorio, esEmailValido } from '../../utils/validators'
 
 export default function Login() {
   const { iniciarSesion } = useAuth()
@@ -9,14 +11,31 @@ export default function Login() {
 
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
+  const [errores, setErrores] = useState({})
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
+
+  // Revisa los campos antes de llamar al servidor
+  function validar() {
+    const nuevos = {}
+    if (!esEmailValido(correo.trim())) {
+      nuevos.correo = 'Ingresa un correo válido'
+    }
+    if (!esCampoObligatorio(password)) {
+      nuevos.password = 'La contraseña es obligatoria'
+    }
+    return nuevos
+  }
 
   async function enviar(evento) {
     evento.preventDefault()
     setError('')
-    setEnviando(true)
 
+    const nuevos = validar()
+    setErrores(nuevos)
+    if (Object.keys(nuevos).length > 0) return
+
+    setEnviando(true)
     try {
       const autenticado = await iniciarSesion(correo.trim(), password)
       const destino = ubicacion.state?.desde ?? (autenticado.rol === 'ADMIN' ? '/admin' : '/')
@@ -38,32 +57,25 @@ export default function Login() {
 
               {error && <div className="alert alert-danger py-2 small">{error}</div>}
 
-              <form onSubmit={enviar}>
-                <div className="mb-3">
-                  <label className="form-label" htmlFor="correo">Correo</label>
-                  <input
-                    className="form-control"
-                    id="correo"
-                    type="email"
-                    autoComplete="email"
-                    value={correo}
-                    onChange={(evento) => setCorreo(evento.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label" htmlFor="password">Contraseña</label>
-                  <input
-                    className="form-control"
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(evento) => setPassword(evento.target.value)}
-                    required
-                  />
-                </div>
+              <form onSubmit={enviar} noValidate>
+                <FormField
+                  id="correo"
+                  label="Correo"
+                  type="email"
+                  autoComplete="email"
+                  value={correo}
+                  onChange={(evento) => setCorreo(evento.target.value)}
+                  error={errores.correo}
+                />
+                <FormField
+                  id="password"
+                  label="Contraseña"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(evento) => setPassword(evento.target.value)}
+                  error={errores.password}
+                />
 
                 <button className="btn btn-primary w-100" type="submit" disabled={enviando}>
                   {enviando ? 'Ingresando…' : 'Ingresar'}

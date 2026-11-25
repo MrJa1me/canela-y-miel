@@ -5,6 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Inicio from './pages/cliente/Inicio'
 import Catalogo from './pages/cliente/Catalogo'
 import Carrito from './pages/cliente/Carrito'
+import Detalle from './pages/cliente/Detalle'
+import Confirmacion from './pages/cliente/Confirmacion'
 import Checkout from './pages/cliente/Checkout'
 import Perfil from './pages/cliente/Perfil'
 import Seguimiento from './pages/cliente/Seguimiento'
@@ -22,6 +24,7 @@ export default function App() {
       <Route element={<LayoutCliente />}>
         <Route index element={<Inicio />} />
         <Route path="catalogo" element={<Catalogo />} />
+        <Route path="producto/:id" element={<Detalle />} />
         <Route path="carrito" element={<Carrito />} />
         <Route path="login" element={<Login />} />
         <Route path="registro" element={<Registro />} />
@@ -29,6 +32,7 @@ export default function App() {
         {/* Solo con sesión iniciada */}
         <Route element={<ProtectedRoute />}>
           <Route path="checkout" element={<Checkout />} />
+          <Route path="confirmacion" element={<Confirmacion />} />
           <Route path="perfil" element={<Perfil />} />
           <Route path="seguimiento" element={<Seguimiento />} />
         </Route>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { calcularTotales } from "../utils/calcularTotales";
 
 // La "libreta compartida" del carrito
 const CartContext = createContext();
@@ -61,20 +62,8 @@ export function CartProvider({ children, esPremium = false }) {
     setItems([]);
   }
 
-  // Subtotal: suma de precio x cantidad de cada producto
-  const subtotal = items.reduce(
-    (suma, item) => suma + item.precio * item.cantidad,
-    0
-  );
-
-  // Envío: $8.000, pero $0 si el carrito está vacío
-  const envio = items.length > 0 ? 8000 : 0;
-
-  // Descuento: 10% del subtotal solo para clientes premium
-  const descuento = esPremium ? Math.round(subtotal * 0.1) : 0;
-
-  // Total a pagar
-  const total = subtotal - descuento + envio;
+  // Subtotal, envío, descuento y total salen de una función simple
+  const { subtotal, envio, descuento, total } = calcularTotales(items, esPremium);
 
   const valor = {
     items,
