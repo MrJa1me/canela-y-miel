@@ -6,13 +6,16 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './styles/variables.css'
 import './styles/global.css'
 import { AuthProvider } from './context/AuthContext'
+import CartProviderSesion from './context/CartProviderSesion'
 import App from './App'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
-        <App />
+        <CartProviderSesion>
+          <App />
+        </CartProviderSesion>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,

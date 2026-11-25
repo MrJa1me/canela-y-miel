@@ -1,7 +1,13 @@
 import { formatPrice } from "../utils/formatPrice";
 
 // Cuadro con el detalle de lo que se va a pagar
-function ResumenCarrito({ subtotal, descuento, envio, total }) {
+function ResumenCarrito({
+  subtotal,
+  descuento,
+  envio,
+  total,
+  etiquetaDescuento = "Descuento Premium (10%)",
+}) {
   return (
     <div className="card">
       <div className="card-body">
@@ -15,7 +21,7 @@ function ResumenCarrito({ subtotal, descuento, envio, total }) {
         {/* El descuento solo se muestra si hay (clientes premium) */}
         {descuento > 0 && (
           <div className="d-flex justify-content-between">
-            <span>Descuento Premium (10%)</span>
+            <span>{etiquetaDescuento}</span>
             <span>-{formatPrice(descuento)}</span>
           </div>
         )}

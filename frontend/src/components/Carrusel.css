@@ -1,0 +1,13 @@
+/* Altura fija para que todas las imágenes del carrusel se vean parejas */
+.carrusel-imagen {
+  height: 320px;
+  object-fit: cover;
+}
+
+/* Fondo oscuro suave detrás del texto para que se lea sobre la foto */
+.carrusel-texto {
+  background-color: var(--color-tertiary);
+  color: var(--color-neutral);
+  opacity: 0.9;
+  border-radius: 0.5rem;
+}
