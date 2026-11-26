@@ -24,7 +24,7 @@ pulido visual al final.
 | 8 categorías y 16 productos con código y precio | **Se implementa** | Catálogo exacto del PDF (TC001…TE002), más `codigo` y `descripcion` en `Producto` | Pendiente de validar |
 | Mayores de 50 años: 50% en todos los productos | **Se implementa** | Se pide `fechaNacimiento` obligatoria en el registro; la edad se calcula desde esa fecha | Pendiente de validar |
 | Código FELICES50: 10% de por vida | **Se implementa** | `codigoPromocional` opcional en el registro. No crea un descuento nuevo: activa el 10% que ya representa `premium` y queda registrado el código para mostrarlo en el perfil | Pendiente de validar |
-| Torta gratis para estudiantes Duoc en su cumpleaños | **Se implementa** | Correos válidos: `@duoc.cl`, `@duocuc.cl`, `@profesor.duoc.cl`. Aplica solo el día y mes de cumpleaños. Se regala **la torta de menor precio** del pedido; si el pedido no trae tortas, no aplica | Pendiente de validar |
+| Torta gratis para estudiantes Duoc en su cumpleaños | **Se implementa** | Correos válidos: `@duoc.cl`, `@duocuc.cl`, `@profesor.duoc.cl`. Aplica solo el día y mes de cumpleaños. Se regala **la torta de menor precio** del pedido y **solo si hay al menos otro producto pagado**; si el pedido es solo esa torta, no aplica | Pendiente de validar |
 | Combinación de descuentos (50%, FELICES50, cupón) | **Se aplica solo el mayor** | Nunca se suman. La torta gratis se resta del subtotal primero y luego se aplica el mayor descuento porcentual sobre el saldo | Pendiente de validar |
 | Filtro por tipo de torta (cuadrada/circular) | **Se implementa** | Sale de la categoría (Tortas Cuadradas / Tortas Circulares); no se crea otra estructura | Pendiente de validar |
 | Filtro por tamaños | **Se implementa simplificado** | Campo entero `porciones` por producto y filtro "hasta X porciones". Los valores son **dato de demostración** (el caso no los entrega) | Pendiente de validar |
@@ -47,7 +47,7 @@ pulido visual al final.
 Orden del cálculo de un pedido:
 
 1. Subtotal = suma de precio × cantidad.
-2. Si corresponde torta gratis Duoc, se resta el precio de la torta más barata del pedido.
+2. Si corresponde torta gratis Duoc (cumpleaños + correo institucional + al menos otro producto pagado), se resta el precio de la torta más barata del pedido.
 3. Descuento porcentual = **el mayor** entre: 50% (mayor de 50 años), 10% (`premium`/FELICES50) y el cupón ingresado.
 4. Total = subtotal − torta gratis − descuento + envío de $8.000.
 

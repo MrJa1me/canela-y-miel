@@ -152,6 +152,20 @@ class PedidoServiceTest {
     }
 
     @Test
+    void noRegalaLaTortaSiEsLoUnicoDelPedido() {
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(20));
+        cliente.setCorreoInstitucional(true);
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido(null, new DetallePedidoRequest(10L, 1, null)), cliente);
+
+        // Una sola torta en el pedido: no hay nada más pagado, así que no se regala.
+        assertEquals(BigDecimal.ZERO, respuesta.descuento());
+        assertEquals(new BigDecimal("18000"), respuesta.total());
+    }
+
+    @Test
     void rechazaFechaDeEntregaPasada() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(cliente));
         when(estadoPedidoRepository.findByOrden(1)).thenReturn(Optional.of(recibido));

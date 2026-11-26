@@ -30,7 +30,9 @@ export function calcularTotales(items, beneficios = {}) {
 
   const tortaGratis =
     correoInstitucional && cumpleHoy ? precioTortaMasBarata(items) : 0;
-  const base = subtotal - tortaGratis;
+  // Rentabilidad: si el pedido es solo esa torta, no se regala (igual que el backend).
+  const regalo = tortaGratis > 0 && tortaGratis < subtotal ? tortaGratis : 0;
+  const base = subtotal - regalo;
 
   const porcentaje = Math.max(
     esMayorDe50 ? PORCENTAJE_MAYOR_50 : 0,
@@ -38,10 +40,10 @@ export function calcularTotales(items, beneficios = {}) {
     cuponPorcentaje / 100
   );
 
-  const descuento = Math.round(base * porcentaje) + tortaGratis;
+  const descuento = Math.round(base * porcentaje) + regalo;
 
   // Envío: $8.000, pero $0 si el carrito está vacío
   const envio = items.length > 0 ? COSTO_ENVIO : 0;
 
-  return { subtotal, envio, descuento, total: subtotal - descuento + envio, tortaGratis };
+  return { subtotal, envio, descuento, total: subtotal - descuento + envio, tortaGratis: regalo };
 }

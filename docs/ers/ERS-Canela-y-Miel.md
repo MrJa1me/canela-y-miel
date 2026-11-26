@@ -112,7 +112,7 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-18 | Usuarios y roles | Listar usuarios y cambiar su rol entre `ADMIN` y `CLIENTE` | Administrador | Alta |
 | RF-19 | Restricciones por rol | Ocultar en el frontend lo que el rol no puede usar y validarlo en el backend | Sistema | Alta |
 | RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar; completar el catálogo sin borrar datos | Sistema | Media |
-| RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños | Cliente Duoc | Alta |
+| RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños, solo si hay otro producto pagado | Cliente Duoc | Alta |
 
 ## 4. Requisitos no funcionales
 
@@ -158,7 +158,7 @@ el enunciado no entrega tamaños.
 ### 5.2 Cálculo del pedido
 
 1. **Subtotal** = suma de `precio unitario × cantidad`.
-2. **Torta gratis Duoc** = precio de la torta más barata del pedido, solo si el cliente tiene correo institucional y hoy es su cumpleaños.
+2. **Torta gratis Duoc** = precio de la torta más barata del pedido, solo si el cliente tiene correo institucional, hoy es su cumpleaños y el pedido trae al menos otro producto pagado.
 3. **Base** = subtotal − torta gratis.
 4. **Descuento porcentual** = **el mayor** entre: 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón. Nunca se suman.
 5. **Envío** = $8.000 fijo.

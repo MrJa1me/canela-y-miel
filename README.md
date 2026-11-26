@@ -113,7 +113,8 @@ descuento (50% mayor de 50, 10% FELICES50/Premium, cupón) → envío de $8.000.
 
 El registro pide **fecha de nacimiento** (obligatoria) y un **código promocional** opcional (`FELICES50`).
 Los correos `@duoc.cl`, `@duocuc.cl` y `@profesor.duoc.cl` reciben la torta más barata gratis el día de su
-cumpleaños. El pedido guarda fecha de entrega, dirección, teléfono y el mensaje de personalización de las tortas.
+cumpleaños, **solo si el pedido trae otro producto pagado** (una torta sola no activa el beneficio).
+El pedido guarda fecha de entrega, dirección, teléfono y el mensaje de personalización de las tortas.
 
 El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanzan de a uno.
 

@@ -81,4 +81,15 @@ describe("calcularTotales", () => {
       calcularTotales([torta], { correoInstitucional: false, cumpleHoy: true }).descuento
     ).toBe(0);
   });
+
+  it("no regala la torta si es lo único del carrito", () => {
+    const resultado = calcularTotales([torta], {
+      correoInstitucional: true,
+      cumpleHoy: true,
+    });
+
+    // Sin otro producto pagado, la torta se cobra completa.
+    expect(resultado.descuento).toBe(0);
+    expect(resultado.total).toBe(53000);
+  });
 });

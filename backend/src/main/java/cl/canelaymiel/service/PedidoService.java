@@ -128,6 +128,10 @@ public class PedidoService {
         // Orden acordado: 1) se resta la torta gratis, 2) se aplica el MAYOR descuento
         // porcentual (50%, 10% o cupón), 3) se suma el envío fijo.
         BigDecimal tortaGratis = tortaGratis(cliente, pedido.getDetalles(), hoy);
+        // Rentabilidad: si el pedido es solo esa torta, no se regala (tiene que haber algo más pagado).
+        if (tortaGratis.compareTo(subtotal) >= 0) {
+            tortaGratis = BigDecimal.ZERO;
+        }
         BigDecimal base = subtotal.subtract(tortaGratis);
         BigDecimal descuentoPorcentual = base
                 .multiply(porcentajeDescuento(cliente, cupon, hoy))

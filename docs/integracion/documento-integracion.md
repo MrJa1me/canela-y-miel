@@ -216,7 +216,7 @@ Cálculo del ejemplo:
 4. **Total: 89.000**.
 
 Si el cliente fuera mayor de 50, se aplicaría el 50% en vez del 10%. Si fuera estudiante Duoc y hoy fuera su cumpleaños,
-se restaría primero la torta más barata y luego el mayor descuento porcentual sobre el saldo.
+se restaría primero la torta más barata (solo si el pedido trae otro producto pagado) y luego el mayor descuento porcentual sobre el saldo.
 
 El `clienteId` solo puede ser el propio para un `CLIENTE`; si envía otro, responde **403**.
 
