@@ -7,6 +7,9 @@ function CarritoItem({ item, onCambiarCantidad, onQuitar }) {
       <div className="col-12 col-md-5">
         <h2 className="h6 mb-0">{item.nombre}</h2>
         <small>{formatPrice(item.precio)} c/u</small>
+        {item.mensaje && (
+          <small className="d-block text-secondary">Mensaje: {item.mensaje}</small>
+        )}
       </div>
 
       <div className="col-6 col-md-3 mt-2 mt-md-0">

@@ -366,5 +366,6 @@ Componente: setProductos(...) → React vuelve a dibujar
 - El frontend guarda el token en `localStorage`. Una cookie `httpOnly` sería más resistente a XSS, pero complica la explicación y no es exigida por la rúbrica.
 - Los cupones se validan al crear el pedido y también con `GET /cupones/validar/{codigo}`, que es público y solo devuelve el porcentaje.
 - El pedido guarda fecha de entrega, dirección y teléfono; no hay cálculo de rutas ni geocodificación.
+- Los filtros y la búsqueda del catálogo se resuelven en el navegador sobre `GET /productos`; con un catálogo mucho más grande convendría moverlos a parámetros de consulta del backend.
 - `spring.jpa.hibernate.ddl-auto=update` es cómodo para desarrollo; en producción se usarían migraciones.
 - El manual de usuario y el reporte de cobertura de pruebas corresponden a la otra integrante del equipo.

@@ -26,18 +26,23 @@ export function CartProvider({ children, beneficios }) {
     localStorage.setItem(CLAVE_CARRITO, JSON.stringify(items));
   }, [items]);
 
-  // Agrega un producto; si ya estaba, solo le suma cantidad
-  function agregar(producto, cantidad = 1) {
+  // Agrega un producto; si ya estaba, solo le suma cantidad.
+  // El mensaje de personalización se reemplaza si viene uno nuevo.
+  function agregar(producto, cantidad = 1, mensaje = null) {
     setItems((actual) => {
       const existe = actual.find((item) => item.id === producto.id);
       if (existe) {
         return actual.map((item) =>
           item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + cantidad }
+            ? {
+                ...item,
+                cantidad: item.cantidad + cantidad,
+                mensaje: mensaje ?? item.mensaje,
+              }
             : item
         );
       }
-      return [...actual, { ...producto, cantidad }];
+      return [...actual, { ...producto, cantidad, mensaje }];
     });
   }
 

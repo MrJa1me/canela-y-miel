@@ -50,4 +50,12 @@ describe("CartContext", () => {
     expect(carrito.items.length).toBe(0);
     expect(carrito.envio).toBe(0);
   });
+
+  it("guarda el mensaje de personalización y lo conserva al sumar cantidad", () => {
+    act(() => carrito.agregar(torta, 1, "Feliz cumple"));
+    expect(carrito.items[0].mensaje).toBe("Feliz cumple");
+
+    act(() => carrito.agregar(torta, 1));
+    expect(carrito.items[0].mensaje).toBe("Feliz cumple");
+  });
 });

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { listarProductos } from "../../services/productService";
 import { useCart } from "../../context/CartContext";
 import Carrusel from "../../components/Carrusel";
-import ProductCard from "../../components/ProductCard";
+import CarruselProductos from "../../components/CarruselProductos";
 
 // Imágenes que ya están en public/img
 const DIAPOSITIVAS = [
@@ -29,12 +29,12 @@ export default function Inicio() {
   const { agregar } = useCart();
   const [destacados, setDestacados] = useState([]);
 
-  // Al abrir la página, toma los 3 primeros productos activos
+  // Al abrir la página, toma hasta 9 productos activos para el carrusel
   useEffect(() => {
     async function cargar() {
       try {
         const lista = await listarProductos();
-        setDestacados(lista.filter((p) => p.activo).slice(0, 3));
+        setDestacados(lista.filter((p) => p.activo).slice(0, 9));
       } catch {
         // Si falla, solo no se muestran los destacados
         setDestacados([]);
@@ -54,13 +54,11 @@ export default function Inicio() {
       </p>
 
       <h2 className="h5 mt-4">Nuestros favoritos</h2>
-      <div className="row g-3 mb-4">
-        {destacados.map((producto) => (
-          <div key={producto.id} className="col-12 col-md-6 col-lg-4">
-            <ProductCard producto={producto} onAgregar={agregar} />
-          </div>
-        ))}
-      </div>
+      <CarruselProductos
+        id="carrusel-productos"
+        productos={destacados}
+        onAgregar={agregar}
+      />
 
       <Link to="/catalogo" className="btn btn-primary">
         Ver todo el catálogo

@@ -92,8 +92,8 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 
 | ID | Requisito | Descripción | Actor | Prioridad |
 |---|---|---|---|---|
-| RF-01 | Catálogo público | Mostrar productos con nombre, precio, categoría, stock e imagen sin exigir sesión | Visitante | Alta |
-| RF-02 | Filtros de catálogo | Filtrar por categoría y rango de precio | Visitante | Media |
+| RF-01 | Catálogo público | Mostrar productos con código, nombre, descripción, precio, categoría, porciones, stock e imagen sin exigir sesión | Visitante | Alta |
+| RF-02 | Filtros de catálogo | Filtrar por categoría, porciones máximas, rango de precio y búsqueda por nombre o código | Visitante | Media |
 | RF-03 | Registro | Crear cuenta con nombre, correo único, contraseña de al menos 6 caracteres, fecha de nacimiento y código promocional opcional; asignar rol `CLIENTE` | Visitante | Alta |
 | RF-04 | Inicio de sesión | Validar correo y contraseña con BCrypt y entregar access y refresh token | Todos | Alta |
 | RF-05 | Sesión persistente | Mantener la sesión al recargar la página | Cliente / Admin | Alta |
@@ -114,6 +114,7 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar; completar el catálogo sin borrar datos | Sistema | Media |
 | RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños, solo si hay otro producto pagado | Cliente Duoc | Alta |
 | RF-22 | Perfil propio | Ver y editar nombre, teléfono, dirección, preferencias y avatar; cambiar la contraseña con la actual; solo el dueño de la cuenta | Cliente / Admin | Alta |
+| RF-23 | Compartir producto | Copiar el enlace del producto o compartirlo por WhatsApp desde su detalle | Visitante | Media |
 
 ## 4. Requisitos no funcionales
 

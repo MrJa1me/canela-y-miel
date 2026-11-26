@@ -36,10 +36,11 @@ export default function Checkout() {
   const [cuponPorcentaje, setCuponPorcentaje] = useState(0);
   const [enviando, setEnviando] = useState(false);
 
-  const hayTorta = items.some(esTorta);
-
   // El resumen debe dar lo mismo que el backend: mismos beneficios y cupón validado
   const totales = calcularTotales(items, { ...beneficios, cuponPorcentaje });
+
+  // El mensaje del checkout solo se usa en las tortas sin mensaje propio.
+  const necesitaMensaje = items.some((item) => esTorta(item) && !item.mensaje);
 
   // Guarda lo que se escribe en el campo que cambió (usa el id como clave)
   function manejarCambio(evento) {
@@ -113,7 +114,7 @@ export default function Checkout() {
         detalles: items.map((item) => ({
           productoId: item.id,
           cantidad: item.cantidad,
-          mensaje: esTorta(item) ? mensaje : null,
+          mensaje: esTorta(item) ? item.mensaje || mensaje : null,
         })),
       });
       vaciar();
@@ -162,11 +163,16 @@ export default function Checkout() {
               <p className="small text-secondary">{avisoCupon}</p>
             )}
 
-            {hayTorta && (
-              <FormField id="mensaje" label="Mensaje para la torta (opcional)"
-                value={datos.mensaje} onChange={manejarCambio}
-                error={errores.mensaje} placeholder="Feliz cumpleaños, Ana"
-                maxLength={200} />
+            {necesitaMensaje && (
+              <>
+                <FormField id="mensaje" label="Mensaje para la torta (opcional)"
+                  value={datos.mensaje} onChange={manejarCambio}
+                  error={errores.mensaje} placeholder="Feliz cumpleaños, Ana"
+                  maxLength={200} />
+                <p className="small text-secondary">
+                  Se usa solo en las tortas que no tengan un mensaje guardado.
+                </p>
+              </>
             )}
 
             <button type="submit" className="btn btn-primary w-100" disabled={enviando}>
