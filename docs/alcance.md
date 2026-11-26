@@ -67,6 +67,10 @@ Los cupones `MIEL10` (activo) y `CANELA20` (inactivo) se conservan porque sostie
 | Animaciones | **CSS propio** | Un solo archivo `animaciones.css`, 200–400 ms, hover con elevación, fade-in con `IntersectionObserver` y `prefers-reduced-motion` |
 | Skeletons | **Se implementan** | Estados de carga en catálogo, detalle, perfil y seguimiento |
 
+**Extra del equipo (fuera del caso):** se agregó un **Mostrador (POS)** en `/admin/mostrador` para que el
+administrador tome pedidos en el local. El retiro en local no cobra envío; el despacho mantiene los $8.000.
+También se sembraron 14 pedidos de ejemplo en una base nueva para que el panel no arranque vacío.
+
 ## 5. Fuera de alcance (documentado)
 
 - Notificaciones push o en tiempo real del estado del pedido.

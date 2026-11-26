@@ -121,7 +121,7 @@ La regla de combinación de descuentos, la definición de "la torta", los avatar
 | RF-06 | Renovación de sesión | Renovar el access token con el refresh token cuando vence | Cliente / Admin | Alta |
 | RF-07 | Cierre de sesión | Borrar los tokens del navegador y volver al estado público | Cliente / Admin | Alta |
 | RF-08 | Carrito | Agregar, quitar y cambiar cantidades de productos | Cliente | Alta |
-| RF-09 | Crear pedido | Registrar un pedido con uno o más productos, fecha de entrega, dirección, teléfono y mensaje de la torta; calcular subtotal, descuento, envío y total | Cliente | Alta |
+| RF-09 | Crear pedido | Registrar un pedido con uno o más productos, fecha de entrega, dirección y teléfono (opcionales en mostrador), retiro en local y mensaje de la torta; calcular subtotal, descuento, envío y total | Cliente / Admin | Alta |
 | RF-10 | Descuentos del caso | Aplicar **solo el mayor** entre 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón | Cliente | Alta |
 | RF-11 | Cupones | Validar un código activo (público) y usarlo como candidato a descuento al crear el pedido | Cliente | Alta |
 | RF-12 | Stock | Descontar stock al crear el pedido y rechazar si no alcanza | Sistema | Alta |
@@ -139,6 +139,7 @@ La regla de combinación de descuentos, la definición de "la torta", los avatar
 | RF-24 | Blog y recetas | Mostrar 3 tarjetas estáticas de recetas y consejos en el Home (contenido de demostración) | Visitante | Baja |
 | RF-25 | Boleta | Generar una vista imprimible del pedido con detalle, entrega y totales | Cliente | Media |
 | RF-26 | Mapa y entrega | Mostrar la ubicación de la tienda con OpenStreetMap en la confirmación y el seguimiento, junto a la fecha estimada | Cliente | Media |
+| RF-27 | Mostrador (POS) | Permitir al administrador crear pedidos para un cliente desde el local, con retiro sin envío, cupón y cálculo del servidor | Administrador | Media |
 
 ## 4. Requisitos no funcionales
 
@@ -226,7 +227,7 @@ Recibido → En preparación → Listo para despacho → En camino → Entregado
 | `Usuario` | id, nombre, correo único, password (BCrypt), teléfono, dirección, fecha de nacimiento, código promocional, correo institucional, preferencias, avatar, premium, activo | Muchos usuarios → 1 rol |
 | `Categoria` | id, nombre único | 1 categoría → muchos productos |
 | `Producto` | id, código único, nombre, descripción, precio, stock, porciones, imagen, activo | Muchos productos → 1 categoría |
-| `Pedido` | id, fecha, fecha de entrega, dirección, teléfono, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
+| `Pedido` | id, fecha, fecha de entrega, dirección, teléfono, retiro, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
 | `DetallePedido` | id, cantidad, precio unitario, subtotal, mensaje | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
 | `EstadoPedido` | id, nombre único, orden único | 1 estado → muchos pedidos |
 | `Cupon` | id, código único, porcentaje, activo | 1 cupón → muchos pedidos |
@@ -326,11 +327,11 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 
 ### 10.1 Backend
 
-**21 pruebas unitarias** con JUnit y Mockito (`mvn clean verify`):
+**22 pruebas unitarias** con JUnit y Mockito (`mvn clean verify`):
 
 | Clase | Qué verifica |
 |---|---|
-| `PedidoServiceTest` (9) | Descuento 10%, 50%, FELICES50, combinación con cupón, torta Duoc, torta única sin regalo, fecha pasada, stock insuficiente y salto de estado |
+| `PedidoServiceTest` (10) | Descuento 10%, 50%, FELICES50, combinación con cupón, torta Duoc, torta única sin regalo, retiro sin envío y sin dirección, fecha pasada, stock insuficiente y salto de estado |
 | `ReglasClienteTest` (4) | Edad, mayoría de 50, cumpleaños por día/mes y correos institucionales |
 | `UsuarioServiceTest` (5) | Edición del perfil, limpieza de campos, avatar inválido y cambio de contraseña |
 | `JwtServiceTest` (3) | Token de acceso, refresh y firma ajena |
@@ -367,7 +368,8 @@ Comando del reporte: `npm run test:coverage` (genera `frontend/coverage/`). Últ
 9. Perfil: editar datos, elegir avatar, guardar preferencias y cambiar contraseña.
 10. Catálogo: filtros por categoría, porciones y precio; búsqueda por nombre y código; compartir.
 11. Confirmación: fecha de entrega, mapa, boleta imprimible y seguimiento con stepper.
-12. Cierre de sesión y vuelta al estado público.
+12. Mostrador: crear un pedido con retiro (sin envío) y otro con despacho; el stock y el total cambian.
+13. Cierre de sesión y vuelta al estado público.
 
 ## 11. Despliegue y operación
 
@@ -412,7 +414,7 @@ Usuarios de prueba:
 | Refresh token sin revocación | Un token robado sirve 7 días | Aceptado para el alcance; se podría agregar una tabla de revocación |
 | Token en `localStorage` | Vulnerable a XSS | No se inyecta HTML de terceros; se podría migrar a cookie `httpOnly` |
 | `ddl-auto=update` | Cambios de esquema sin control | Usar migraciones (Flyway) en un entorno real |
-| Datos de demostración | El dashboard se ve vacío sin pedidos | Crear pedidos durante la presentación |
+| Datos de demostración | El dashboard se ve vacío sin pedidos | La semilla crea 14 pedidos en una base nueva; si ya hay pedidos, se conserva la base |
 | Dependencia de Docker | Sin Docker no hay base de datos | El README explica la instalación y el volumen |
 
 ## 14. Glosario de archivos clave

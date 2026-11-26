@@ -9,7 +9,21 @@ Incluye frontend en React, backend en Spring Boot y base de datos MySQL en Docke
 - Node.js 20 o superior
 - Docker Desktop encendido
 
-## Puesta en marcha (en este orden)
+## Inicio rápido (Windows)
+
+Doble clic en **`iniciar.cmd`** (o ejecuta `.\iniciar.ps1`). El script:
+
+1. Crea `.env` si no existe.
+2. Levanta MySQL y espera a que esté `healthy`.
+3. Instala las dependencias del frontend si faltan.
+4. Inicia el backend y el frontend en ventanas separadas.
+5. Abre `http://localhost:5173` en el navegador.
+
+Para detener todo usa **`detener.cmd`** (o `.\detener.ps1`): no borra los datos.
+
+La primera vez puede tardar más porque Maven y npm descargan dependencias.
+
+## Puesta en marcha manual (en este orden)
 
 ### 1. Variables de entorno
 
@@ -90,10 +104,16 @@ Se crean al arrancar el backend con la base vacía.
 
 | Rol | Correo | Contraseña | Nota |
 |---|---|---|---|
-| ADMIN | admin@canelaymiel.cl | Admin1234 | Acceso al panel |
+| ADMIN | admin@canelaymiel.cl | Admin1234 | Acceso al panel y al mostrador |
 | CLIENTE | cliente@canelaymiel.cl | Cliente1234 | Premium: 10% de descuento |
+| CLIENTE | maria@duoc.cl | Cliente1234 | FELICES50 y correo institucional |
+| CLIENTE | pedro@correo.cl | Cliente1234 | Mayor de 50: 50% de descuento |
+| CLIENTE | mostrador@canelaymiel.cl | Cliente1234 | Cliente para pedidos del local |
 
 Cupón de prueba: `MIEL10` (10%, activo). `CANELA20` existe, pero está inactivo.
+
+**Datos de demostración:** en una base nueva se crean **14 pedidos de los últimos 7 días** para que el
+dashboard y el panel de pedidos no aparezcan vacíos. Si la base ya tiene pedidos, no se duplican.
 
 ## API
 
@@ -126,6 +146,12 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 - El token de acceso dura **15 minutos** y el refresh **7 días**. Van en `Authorization: Bearer <token>`.
 - La clave para firmar los tokens está en `JWT_SECRET` (`.env`).
 - En Swagger: ejecuta `POST /auth/login`, copia el `token` y pégalo en **Authorize**.
+
+### Mostrador (POS)
+
+En `/admin/mostrador` el administrador puede crear un pedido para un cliente sin pasar por el carrito:
+busca productos, ajusta cantidades, elige cliente y entrega (retiro en el local o despacho), fecha y cupón.
+El retiro en el local **no cobra envío**; el backend recalcula precios, descuentos y stock.
 
 ### Sesión en el frontend
 

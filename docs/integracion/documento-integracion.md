@@ -176,11 +176,15 @@ Todos los errores usan la misma estructura:
   "fechaEntrega": "2026-11-27",
   "direccion": "Av. Siempre Viva 123",
   "telefono": "912345678",
+  "retiro": false,
   "detalles": [
     { "productoId": 1, "cantidad": 2, "mensaje": "Feliz cumpleaños" }
   ]
 }
 ```
+
+En los pedidos de **mostrador**, `direccion` y `telefono` pueden omitirse y `retiro` va en `true`;
+en ese caso el envío es **$0**. El checkout web sigue exigiendo dirección y teléfono.
 
 Respuesta `201`:
 
@@ -191,6 +195,7 @@ Respuesta `201`:
   "fechaEntrega": "2026-11-27",
   "direccion": "Av. Siempre Viva 123",
   "telefono": "912345678",
+  "retiro": false,
   "cliente": "Cliente Demo",
   "correo": "cliente@canelaymiel.cl",
   "estado": "Recibido",
@@ -321,31 +326,38 @@ Componente: setProductos(...) → React vuelve a dibujar
 
 ### 6.3 Capturas del frontend consumiendo la API
 
+> Las capturas se actualizan después de la última ronda de cambios del panel (mostrador y búsquedas).
+> La lista completa, con URL y usuario, está en [`docs/capturas.md`](../capturas.md).
+
 ![Inicio de sesión](img/01-inicio-sesion.jpeg)
 
 **Figura 1.** Formulario de inicio de sesión. Envía las credenciales a `POST /auth/login` y guarda los tokens en el navegador.
 
 ![Dashboard con datos reales](img/02-dashboard.jpeg)
 
-**Figura 2.** Dashboard del administrador. Los KPIs y el gráfico se calculan con pedidos, productos y usuarios obtenidos de la API.
+**Figura 2.** Dashboard del administrador. Los KPIs, el gráfico, los últimos pedidos y el stock bajo se calculan con datos reales de la API.
 
 ![Inventario](img/03-inventario.jpeg)
 
-**Figura 3.** Inventario. La tabla se llena con `GET /productos`; las acciones usan `POST`, `PUT` y `DELETE`.
+**Figura 3.** Inventario. La tabla se llena con `GET /productos`; permite buscar por nombre o código, filtrar stock bajo y usar `POST`, `PUT` y `DELETE`.
 
 ![Pedidos](img/04-pedidos.jpeg)
 
-**Figura 4.** Pedidos. Se listan con `GET /pedidos`, se filtran por estado y el botón de acción usa `PATCH /pedidos/{id}/estado`.
+**Figura 4.** Pedidos. Se listan con `GET /pedidos`, se buscan por cliente o número, muestran la entrega y el botón de acción usa `PATCH /pedidos/{id}/estado`.
 
 ![Usuarios](img/05-usuarios.jpeg)
 
-**Figura 5.** Usuarios. Se listan con `GET /usuarios` y el selector de rol ejecuta `PUT /usuarios/{id}`.
+**Figura 5.** Usuarios. Se listan con `GET /usuarios`, se buscan por nombre o correo y el selector de rol ejecuta `PUT /usuarios/{id}`.
 
 ![Swagger](img/06-swagger.jpeg)
 
 **Figura 6.** Swagger con el esquema Bearer y los endpoints documentados. El botón **Authorize** permite probar con el token de acceso.
 
-> Las capturas se tomaron con los pedidos de demostración **#3 y #6** que quedaron en la base local. Para repetirlas, crea pedidos nuevos y vuelve a capturar las figuras.
+![Mostrador](img/07-mostrador.jpeg)
+
+**Figura 7.** Mostrador (POS). El administrador arma el pedido y lo envía con `POST /pedidos`; el retiro en el local no cobra envío.
+
+> Las capturas se tomaron con los pedidos de demostración **#3, #6 y #7**. En una base nueva, la semilla crea 14 pedidos de los últimos 7 días. Para repetir las capturas, crea pedidos nuevos y vuelve a capturar las figuras.
 
 ## 7. Verificación de entrega
 

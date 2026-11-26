@@ -10,9 +10,15 @@ Este archivo no reemplaza el manual: es la lista para que Anaís lo actualice.
 - Usuarios:
   - `admin@canelaymiel.cl` / `Admin1234` (ADMIN).
   - `cliente@canelaymiel.cl` / `Cliente1234` (CLIENTE Premium).
-  - `ui.duoc.19fa88@duoc.cl` / `Clave1234` (cumpleaños hoy, avatar y preferencias; sirve para la torta gratis).
-- Pedidos de ejemplo ya creados: **#6** (2 tortas, mensaje, entrega y boleta) y **#3** (una torta).
+  - `maria@duoc.cl` / `Cliente1234` (FELICES50 y correo Duoc).
+  - `pedro@correo.cl` / `Cliente1234` (mayor de 50).
+  - `mostrador@canelaymiel.cl` / `Cliente1234` (cliente para el POS).
+  - `ui.duoc.19fa88@duoc.cl` / `Clave1234` (cumpleaños hoy, avatar y preferencias).
+- Pedidos: en una **base nueva** la semilla crea 14 pedidos de los últimos 7 días. En la base actual existen
+  el #3 y el #6; usa los que aparezcan en el panel.
 - Para la boleta impresa: entrar al pedido, pulsar **Ver boleta** y capturar la vista previa de impresión.
+- Las capturas del panel (`/admin`, inventario, pedidos y usuarios) deben tomarse **después** de los últimos
+  cambios del mostrador y las búsquedas.
 
 ## Lista de capturas
 
@@ -32,14 +38,15 @@ Este archivo no reemplaza el manual: es la lista para que Anaís lo actualice.
 | 12 | Inicio de sesión | `/login` | Visitante | Formulario limpio |
 | 13 | Perfil | `/perfil` | `ui.duoc` | Datos, avatar, beneficios, contraseña, preferencias e historial |
 | 14 | Edición del perfil | `/perfil` → Editar | `ui.duoc` | Formulario con los 6 avatares y vista previa |
-| 15 | Panel admin | `/admin` | `admin@...` | KPIs y gráfico con los pedidos de ejemplo |
-| 16 | Inventario | `/admin/inventario` | `admin@...` | Tabla con código, categoría, precio y stock |
-| 17 | Pedidos | `/admin/pedidos` | `admin@...` | Pedidos #3 y #6 y el botón de estado |
-| 18 | Usuarios | `/admin/usuarios` | `admin@...` | Lista con rol y Premium |
-| 19 | Swagger | `http://localhost:8080/swagger-ui.html` | — | Los 6 grupos, las 33 operaciones y el botón Authorize |
-| 20 | Swagger autorizado | Igual, tras `POST /auth/login` + Authorize | ADMIN | El diálogo con "Authorized" |
-| 21 | Swagger 403 | `GET /usuarios` con token CLIENTE | CLIENTE | Respuesta 403 |
-| 22 | Swagger registro | `POST /auth/registro` con FELICES50 y fecha | — | Respuesta 201 con el usuario creado |
+| 15 | Panel admin | `/admin` | `admin@...` | KPIs, gráfico, últimos pedidos y stock bajo |
+| 16 | Mostrador (POS) | `/admin/mostrador` | `admin@...` | Productos, pedido en curso, cliente, retiro y total |
+| 17 | Inventario | `/admin/inventario` | `admin@...` | Tabla con búsqueda y filtro de stock bajo |
+| 18 | Pedidos | `/admin/pedidos` | `admin@...` | Búsqueda, entrega y botón de estado |
+| 19 | Usuarios | `/admin/usuarios` | `admin@...` | Búsqueda, Premium y rol |
+| 20 | Swagger | `http://localhost:8080/swagger-ui.html` | — | Los 6 grupos, las 33 operaciones y el botón Authorize |
+| 21 | Swagger autorizado | Igual, tras `POST /auth/login` + Authorize | ADMIN | El diálogo con "Authorized" |
+| 22 | Swagger 403 | `GET /usuarios` con token CLIENTE | CLIENTE | Respuesta 403 |
+| 23 | Swagger registro | `POST /auth/registro` con FELICES50 y fecha | — | Respuesta 201 con el usuario creado |
 
 ## Documento de cobertura (Anaís)
 
