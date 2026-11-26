@@ -6,7 +6,7 @@ function ResumenCarrito({
   descuento,
   envio,
   total,
-  etiquetaDescuento = "Descuento Premium (10%)",
+  etiquetaDescuento = "Descuentos aplicados",
 }) {
   return (
     <div className="card">

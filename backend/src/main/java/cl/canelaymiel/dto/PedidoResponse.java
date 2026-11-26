@@ -3,12 +3,16 @@ package cl.canelaymiel.dto;
 import cl.canelaymiel.model.DetallePedido;
 import cl.canelaymiel.model.Pedido;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record PedidoResponse(
         Long id,
         LocalDateTime fecha,
+        LocalDate fechaEntrega,
+        String direccion,
+        String telefono,
         String cliente,
         String correo,
         String estado,
@@ -23,6 +27,9 @@ public record PedidoResponse(
         return new PedidoResponse(
                 pedido.getId(),
                 pedido.getFecha(),
+                pedido.getFechaEntrega(),
+                pedido.getDireccion(),
+                pedido.getTelefono(),
                 pedido.getCliente().getNombre(),
                 pedido.getCliente().getCorreo(),
                 pedido.getEstado().getNombre(),
@@ -39,7 +46,8 @@ public record PedidoResponse(
             String producto,
             Integer cantidad,
             BigDecimal precioUnitario,
-            BigDecimal subtotal) {
+            BigDecimal subtotal,
+            String mensaje) {
 
         public static DetalleResponse desde(DetallePedido detalle) {
             return new DetalleResponse(
@@ -47,7 +55,8 @@ public record PedidoResponse(
                     detalle.getProducto().getNombre(),
                     detalle.getCantidad(),
                     detalle.getPrecioUnitario(),
-                    detalle.getSubtotal());
+                    detalle.getSubtotal(),
+                    detalle.getMensaje());
         }
     }
 }

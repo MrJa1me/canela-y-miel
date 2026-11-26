@@ -21,7 +21,7 @@ function cabeceras() {
 
 // Única salida al backend: agrega el token y, si el acceso venció,
 // intenta renovarlo antes de dar la petición por fallida.
-export async function solicitar(ruta, { method = 'GET', body, renovar = true } = {}) {
+export async function solicitar(ruta, { method = 'GET', body, renovar = true, silenciarError = false } = {}) {
   const respuesta = await fetch(`${API_URL}${ruta}`, {
     method,
     headers: cabeceras(),
@@ -44,7 +44,9 @@ export async function solicitar(ruta, { method = 'GET', body, renovar = true } =
       avisarCierre()
     }
 
-    manejarError(respuesta.status, mensaje)
+    if (!silenciarError) {
+      manejarError(respuesta.status, mensaje)
+    }
     throw new Error(mensaje ?? `Error ${respuesta.status}`)
   }
 

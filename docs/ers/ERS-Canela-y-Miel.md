@@ -94,15 +94,15 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 |---|---|---|---|---|
 | RF-01 | Catálogo público | Mostrar productos con nombre, precio, categoría, stock e imagen sin exigir sesión | Visitante | Alta |
 | RF-02 | Filtros de catálogo | Filtrar por categoría y rango de precio | Visitante | Media |
-| RF-03 | Registro | Crear cuenta con nombre, correo único y contraseña de al menos 6 caracteres; asignar rol `CLIENTE` | Visitante | Alta |
+| RF-03 | Registro | Crear cuenta con nombre, correo único, contraseña de al menos 6 caracteres, fecha de nacimiento y código promocional opcional; asignar rol `CLIENTE` | Visitante | Alta |
 | RF-04 | Inicio de sesión | Validar correo y contraseña con BCrypt y entregar access y refresh token | Todos | Alta |
 | RF-05 | Sesión persistente | Mantener la sesión al recargar la página | Cliente / Admin | Alta |
 | RF-06 | Renovación de sesión | Renovar el access token con el refresh token cuando vence | Cliente / Admin | Alta |
 | RF-07 | Cierre de sesión | Borrar los tokens del navegador y volver al estado público | Cliente / Admin | Alta |
 | RF-08 | Carrito | Agregar, quitar y cambiar cantidades de productos | Cliente | Alta |
-| RF-09 | Crear pedido | Registrar un pedido con uno o más productos y calcular subtotal, descuento, envío y total | Cliente | Alta |
-| RF-10 | Descuento Premium | Aplicar 10% de descuento a los productos si el cliente es Premium | Cliente Premium | Alta |
-| RF-11 | Cupones | Validar código activo y aplicar su porcentaje sobre el saldo | Cliente | Alta |
+| RF-09 | Crear pedido | Registrar un pedido con uno o más productos, fecha de entrega, dirección, teléfono y mensaje de la torta; calcular subtotal, descuento, envío y total | Cliente | Alta |
+| RF-10 | Descuentos del caso | Aplicar **solo el mayor** entre 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón | Cliente | Alta |
+| RF-11 | Cupones | Validar un código activo (público) y usarlo como candidato a descuento al crear el pedido | Cliente | Alta |
 | RF-12 | Stock | Descontar stock al crear el pedido y rechazar si no alcanza | Sistema | Alta |
 | RF-13 | Estados del pedido | Avanzar solo al estado siguiente del flujo definido | Administrador | Alta |
 | RF-14 | Mis pedidos | Mostrar al cliente únicamente sus propios pedidos | Cliente | Alta |
@@ -111,7 +111,8 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-17 | Pedidos (admin) | Listar, filtrar por estado y avanzar pedidos | Administrador | Alta |
 | RF-18 | Usuarios y roles | Listar usuarios y cambiar su rol entre `ADMIN` y `CLIENTE` | Administrador | Alta |
 | RF-19 | Restricciones por rol | Ocultar en el frontend lo que el rol no puede usar y validarlo en el backend | Sistema | Alta |
-| RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar | Sistema | Media |
+| RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar; completar el catálogo sin borrar datos | Sistema | Media |
+| RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños | Cliente Duoc | Alta |
 
 ## 4. Requisitos no funcionales
 
@@ -157,13 +158,14 @@ el enunciado no entrega tamaños.
 ### 5.2 Cálculo del pedido
 
 1. **Subtotal** = suma de `precio unitario × cantidad`.
-2. **Descuento Premium** = 10% del subtotal, solo si el cliente es Premium.
-3. **Saldo** = subtotal − descuento Premium.
-4. **Descuento por cupón** = porcentaje del cupón sobre el saldo.
+2. **Torta gratis Duoc** = precio de la torta más barata del pedido, solo si el cliente tiene correo institucional y hoy es su cumpleaños.
+3. **Base** = subtotal − torta gratis.
+4. **Descuento porcentual** = **el mayor** entre: 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón. Nunca se suman.
 5. **Envío** = $8.000 fijo.
-6. **Total** = subtotal − descuento Premium − descuento por cupón + envío.
+6. **Total** = subtotal − torta gratis − descuento porcentual + envío.
 
-Los valores se redondean a peso entero (sin decimales).
+Los valores se redondean a peso entero (sin decimales). El frontend usa la misma fórmula en
+`calcularTotales.js` para mostrar el resumen antes de confirmar.
 
 ### 5.3 Stock
 
@@ -187,17 +189,19 @@ Recibido → En preparación → Listo para despacho → En camino → Entregado
 - El código no distingue mayúsculas de minúsculas.
 - Debe existir y estar activo.
 - El porcentaje va entre 1 y 100.
+- `GET /cupones/validar/{codigo}` es público y solo devuelve el porcentaje, para que el checkout muestre el resumen correcto.
+- El cupón compite con los otros descuentos: se aplica solo si es el mayor.
 
 ## 6. Modelo de datos
 
 | Entidad | Campos principales | Relaciones |
 |---|---|---|
 | `Rol` | id, nombre (ADMIN/CLIENTE) | 1 rol → muchos usuarios |
-| `Usuario` | id, nombre, correo único, password (BCrypt), premium, activo | Muchos usuarios → 1 rol |
+| `Usuario` | id, nombre, correo único, password (BCrypt), fecha de nacimiento, código promocional, correo institucional, premium, activo | Muchos usuarios → 1 rol |
 | `Categoria` | id, nombre único | 1 categoría → muchos productos |
 | `Producto` | id, código único, nombre, descripción, precio, stock, porciones, imagen, activo | Muchos productos → 1 categoría |
-| `Pedido` | id, fecha, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
-| `DetallePedido` | id, cantidad, precio unitario, subtotal | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
+| `Pedido` | id, fecha, fecha de entrega, dirección, teléfono, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
+| `DetallePedido` | id, cantidad, precio unitario, subtotal, mensaje | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
 | `EstadoPedido` | id, nombre único, orden único | 1 estado → muchos pedidos |
 | `Cupon` | id, código único, porcentaje, activo | 1 cupón → muchos pedidos |
 

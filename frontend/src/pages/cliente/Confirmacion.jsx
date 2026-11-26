@@ -24,6 +24,14 @@ export default function Confirmacion() {
 
       <div className="row">
         <div className="col-12 col-lg-7">
+          {pedido.fechaEntrega && (
+            <p className="mb-3">
+              <strong>Entrega:</strong> {pedido.fechaEntrega}
+              {pedido.direccion && <> — {pedido.direccion}</>}
+              {pedido.telefono && <> · {pedido.telefono}</>}
+            </p>
+          )}
+
           <h2 className="h5">Detalle</h2>
           <ul className="list-group mb-3">
             {pedido.detalles.map((detalle) => (
@@ -33,6 +41,11 @@ export default function Confirmacion() {
               >
                 <span>
                   {detalle.cantidad} x {detalle.producto}
+                  {detalle.mensaje && (
+                    <small className="d-block text-secondary">
+                      Mensaje: {detalle.mensaje}
+                    </small>
+                  )}
                 </span>
                 <span>{formatPrice(detalle.subtotal)}</span>
               </li>

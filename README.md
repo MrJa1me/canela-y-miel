@@ -106,14 +106,20 @@ Base: `http://localhost:8080/api/v1` · Documentación: <http://localhost:8080/s
 | Categorías | `GET/POST /categorias` · `GET/PUT/DELETE /categorias/{id}` |
 | Pedidos | `GET/POST /pedidos` · `GET/DELETE /pedidos/{id}` · `PATCH /pedidos/{id}/estado` |
 | Usuarios | `GET/POST /usuarios` · `GET/PUT/DELETE /usuarios/{id}` |
-| Cupones | `GET/POST /cupones` · `GET/PUT/DELETE /cupones/{id}` |
+| Cupones | `GET/POST /cupones` · `GET/PUT/DELETE /cupones/{id}` · `GET /cupones/validar/{codigo}` (público) |
 
-Reglas de negocio de un pedido: subtotal → 10% Premium → cupón sobre el saldo → envío de $8.000.
+Reglas de negocio de un pedido: subtotal → torta gratis de cumpleaños Duoc (si aplica) → **solo el mayor**
+descuento (50% mayor de 50, 10% FELICES50/Premium, cupón) → envío de $8.000.
+
+El registro pide **fecha de nacimiento** (obligatoria) y un **código promocional** opcional (`FELICES50`).
+Los correos `@duoc.cl`, `@duocuc.cl` y `@profesor.duoc.cl` reciben la torta más barata gratis el día de su
+cumpleaños. El pedido guarda fecha de entrega, dirección, teléfono y el mensaje de personalización de las tortas.
+
 El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanzan de a uno.
 
 ### Acceso y roles
 
-- **Público:** catálogo (`GET /productos`, `GET /categorias`), registro, login, refresh y Swagger.
+- **Público:** catálogo (`GET /productos`, `GET /categorias`), registro, login, refresh, validar cupón y Swagger.
 - **CLIENTE:** crea pedidos para su propia cuenta y ve solo los suyos.
 - **ADMIN:** crea/edita/elimina productos y categorías, administra usuarios y cupones, y cambia estados.
 - El token de acceso dura **15 minutos** y el refresh **7 días**. Van en `Authorization: Bearer <token>`.

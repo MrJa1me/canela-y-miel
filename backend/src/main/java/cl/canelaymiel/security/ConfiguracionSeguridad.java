@@ -38,6 +38,8 @@ public class ConfiguracionSeguridad {
                         .requestMatchers("/api/v1/auth/registro", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**", "/api/v1/categorias/**").permitAll()
+                        // Validar un cupón es público: solo devuelve su porcentaje.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/cupones/validar/**").permitAll()
                         // Solo ADMIN
                         .requestMatchers("/api/v1/usuarios/**", "/api/v1/cupones/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/pedidos/*/estado").hasRole("ADMIN")

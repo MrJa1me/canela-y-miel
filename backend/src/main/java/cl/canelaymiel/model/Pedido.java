@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,15 @@ public class Pedido {
 
     @Column(nullable = false)
     private LocalDateTime fecha;
+
+    // Datos de entrega del checkout. Nulos en los pedidos antiguos.
+    private LocalDate fechaEntrega;
+
+    @Column(length = 200)
+    private String direccion;
+
+    @Column(length = 20)
+    private String telefono;
 
     @Column(nullable = false, precision = 12, scale = 0)
     private BigDecimal subtotal;

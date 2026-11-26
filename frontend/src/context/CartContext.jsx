@@ -17,7 +17,7 @@ function leerCarritoGuardado() {
   }
 }
 
-export function CartProvider({ children, esPremium = false }) {
+export function CartProvider({ children, beneficios }) {
   // items = lista de productos en el carrito, cada uno con su cantidad
   const [items, setItems] = useState(leerCarritoGuardado);
 
@@ -63,7 +63,7 @@ export function CartProvider({ children, esPremium = false }) {
   }
 
   // Subtotal, envío, descuento y total salen de una función simple
-  const { subtotal, envio, descuento, total } = calcularTotales(items, esPremium);
+  const { subtotal, envio, descuento, total } = calcularTotales(items, beneficios);
 
   const valor = {
     items,

@@ -46,6 +46,17 @@ public class CuponesController {
         return cuponService.obtener(id);
     }
 
+    @Operation(summary = "Validar un cupón por su código",
+            description = "Público: permite mostrar el descuento antes de confirmar el pedido.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cupón válido"),
+            @ApiResponse(responseCode = "400", description = "El cupón no existe o está inactivo")
+    })
+    @GetMapping("/validar/{codigo}")
+    public CuponResponse validar(@PathVariable String codigo) {
+        return cuponService.validar(codigo);
+    }
+
     @Operation(summary = "Crear un cupón")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Cupón creado"),

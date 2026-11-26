@@ -21,8 +21,10 @@ import cl.canelaymiel.repository.ProductoRepository;
 import cl.canelaymiel.repository.UsuarioRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PedidoService {
 
     private static final BigDecimal ENVIO = new BigDecimal("8000");
-    private static final BigDecimal DESCUENTO_PREMIUM = new BigDecimal("0.10");
+    private static final BigDecimal DESCUENTO_MAYOR_50 = new BigDecimal("0.50");
+    private static final BigDecimal DESCUENTO_DIEZ = new BigDecimal("0.10");
 
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
@@ -78,10 +81,18 @@ public class PedidoService {
 
         Cupon cupon = buscarCupon(request.cuponCodigo());
 
+        LocalDate hoy = LocalDate.now();
+        if (request.fechaEntrega() == null || request.fechaEntrega().isBefore(hoy)) {
+            throw new DatosInvalidosException("La fecha de entrega no puede ser pasada");
+        }
+
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
         pedido.setEstado(estadoInicial);
         pedido.setFecha(LocalDateTime.now());
+        pedido.setFechaEntrega(request.fechaEntrega());
+        pedido.setDireccion(request.direccion().trim());
+        pedido.setTelefono(request.telefono().trim());
         pedido.setCupon(cupon);
 
         BigDecimal subtotal = BigDecimal.ZERO;
@@ -108,18 +119,20 @@ public class PedidoService {
             detalle.setCantidad(item.cantidad());
             detalle.setPrecioUnitario(producto.getPrecio());
             detalle.setSubtotal(linea);
+            detalle.setMensaje(item.mensaje() == null || item.mensaje().isBlank() ? null : item.mensaje().trim());
             pedido.agregarDetalle(detalle);
 
             subtotal = subtotal.add(linea);
         }
 
-        // Primero el 10% Premium, luego el cupón sobre el saldo.
-        BigDecimal descuentoPremium = cliente.isPremium() ? subtotal.multiply(DESCUENTO_PREMIUM) : BigDecimal.ZERO;
-        BigDecimal saldo = subtotal.subtract(descuentoPremium);
-        BigDecimal descuentoCupon = cupon == null
-                ? BigDecimal.ZERO
-                : saldo.multiply(BigDecimal.valueOf(cupon.getPorcentaje())).divide(BigDecimal.valueOf(100));
-        BigDecimal descuento = descuentoPremium.add(descuentoCupon).setScale(0, RoundingMode.HALF_UP);
+        // Orden acordado: 1) se resta la torta gratis, 2) se aplica el MAYOR descuento
+        // porcentual (50%, 10% o cupón), 3) se suma el envío fijo.
+        BigDecimal tortaGratis = tortaGratis(cliente, pedido.getDetalles(), hoy);
+        BigDecimal base = subtotal.subtract(tortaGratis);
+        BigDecimal descuentoPorcentual = base
+                .multiply(porcentajeDescuento(cliente, cupon, hoy))
+                .setScale(0, RoundingMode.HALF_UP);
+        BigDecimal descuento = descuentoPorcentual.add(tortaGratis);
 
         pedido.setSubtotal(subtotal);
         pedido.setDescuento(descuento);
@@ -179,5 +192,46 @@ public class PedidoService {
         }
 
         return cupon;
+    }
+
+    // Solo se aplica el mayor descuento: nunca se suman porcentajes.
+    private BigDecimal porcentajeDescuento(Usuario cliente, Cupon cupon, LocalDate hoy) {
+        BigDecimal mayor = BigDecimal.ZERO;
+
+        if (ReglasCliente.esMayorDe50(cliente.getFechaNacimiento(), hoy)) {
+            mayor = DESCUENTO_MAYOR_50;
+        }
+
+        boolean diez = cliente.isPremium()
+                || ReglasCliente.CODIGO_FELICES50.equals(cliente.getCodigoPromocional());
+        if (diez && mayor.compareTo(DESCUENTO_DIEZ) < 0) {
+            mayor = DESCUENTO_DIEZ;
+        }
+
+        if (cupon != null) {
+            BigDecimal delCupon = BigDecimal.valueOf(cupon.getPorcentaje())
+                    .divide(BigDecimal.valueOf(100));
+            if (delCupon.compareTo(mayor) > 0) {
+                mayor = delCupon;
+            }
+        }
+
+        return mayor;
+    }
+
+    // Torta gratis de cumpleaños para estudiantes Duoc: se regala la torta más barata.
+    // shortcut: "torta" se reconoce por el nombre porque el catálogo del caso las nombra así.
+    private BigDecimal tortaGratis(Usuario cliente, List<DetallePedido> detalles, LocalDate hoy) {
+        if (!Boolean.TRUE.equals(cliente.getCorreoInstitucional())
+                || !ReglasCliente.cumpleAnosHoy(cliente.getFechaNacimiento(), hoy)) {
+            return BigDecimal.ZERO;
+        }
+
+        return detalles.stream()
+                .filter(detalle -> detalle.getProducto().getNombre()
+                        .toLowerCase(Locale.ROOT).startsWith("torta"))
+                .map(DetallePedido::getPrecioUnitario)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
     }
 }
