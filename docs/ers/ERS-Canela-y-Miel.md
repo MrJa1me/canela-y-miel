@@ -150,7 +150,7 @@ La regla de combinación de descuentos, la definición de "la torta", los avatar
 | RNF-03 | Seguridad | Contraseñas con BCrypt; JWT firmado; roles validados en el backend; CORS restringido a `localhost:5173` |
 | RNF-04 | Rendimiento | Las operaciones locales responden en menos de 1 segundo con la base de datos en Docker |
 | RNF-05 | Mantenibilidad | Capas controller → service → repository; nombres consistentes; comentarios cortos en español |
-| RNF-06 | Pruebas | Mínimo 10 pruebas Jasmine/Karma con cobertura (hoy 52) y pruebas del backend para la lógica de pedidos, reglas y tokens (21) |
+| RNF-06 | Pruebas | Mínimo 10 pruebas Jasmine/Karma con cobertura (hoy 59) y pruebas del backend para la lógica de pedidos, reglas y tokens (22) |
 | RNF-07 | Portabilidad | Funciona en Windows con Docker, JDK 17 y Node 20+; no depende de rutas absolutas |
 | RNF-08 | Accesibilidad | `label` asociado a cada campo, textos alternativos, contraste y foco visible |
 | RNF-09 | Persistencia | Los datos sobreviven a reinicios gracias al volumen de Docker |
@@ -338,11 +338,11 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 
 ### 10.2 Frontend
 
-**54 pruebas** con Jasmine + Karma, con mocks de `localStorage` y espías de funciones:
+**59 pruebas** con Jasmine + Karma, con mocks de `localStorage` y espías de funciones:
 
 | Archivo | Qué cubre |
 |---|---|
-| `test/components/` | `FormField`, `ProductCard`, `Avatar` y `PanelDesplegable` (props, render, eventos y apertura del panel) |
+| `test/components/` | `FormField`, `ProductCard`, `Avatar`, `PanelDesplegable`, `Desplegable` y `MiniCarrito` (props, render, eventos y menús) |
 | `test/context/CartContext.spec.jsx` | Carrito, `localStorage` y mensaje por producto |
 | `test/utils/calcularTotales.spec.js` | Envío, Premium, 50%, FELICES50, cupón, solo el mayor y torta gratis |
 | `test/utils/descuentos.spec.js` | Edad, cumpleaños, correo institucional y beneficios del usuario |
@@ -353,7 +353,7 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 | `test/utils/agruparEnFilas.spec.js` | Agrupación para el carrusel |
 | `test/utils/tienda.spec.js` | URL del mapa de OpenStreetMap |
 
-Comando del reporte: `npm run test:coverage` (genera `frontend/coverage/`). Última medición sobre el código cubierto por las pruebas: **93,65% de sentencias, 88,57% de ramas y 96,36% de líneas**.
+Comando del reporte: `npm run test:coverage` (genera `frontend/coverage/`). Última medición sobre el código cubierto por las pruebas: **94,03% de sentencias, 87,02% de ramas y 96,26% de líneas**.
 
 ### 10.3 Pruebas manuales de aceptación
 
@@ -393,7 +393,7 @@ Usuarios de prueba:
 |---|---|---|
 | EP2 — Proyecto con framework JS (IE2.1.1) | React + Vite + Router, estructura por capas | Cumplido |
 | EP2 — Componentes con props/estados y Bootstrap (IE2.1.2) | Componentes del admin, `NavBar`, `ProtectedRoute`, grillas y tablas responsivas | Cumplido |
-| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Cumplido: 54 pruebas |
+| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Cumplido: 59 pruebas |
 | EP2 — Proceso de testeo y cobertura (IE2.3.x) | Configuración Karma + reporte | Cumplido: `npm run test:coverage` |
 | EP3 — Backend, base de datos, lógica y modelos (IE3.1.1) | Entidades, servicios y MySQL | Cumplido |
 | EP3 — API REST con CRUD y Swagger (IE3.2.1) | 33 operaciones documentadas | Cumplido |

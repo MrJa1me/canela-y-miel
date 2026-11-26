@@ -47,11 +47,13 @@ Este archivo no reemplaza el manual: es la lista para que Anaís lo actualice.
 | 21 | Swagger autorizado | Igual, tras `POST /auth/login` + Authorize | ADMIN | El diálogo con "Authorized" |
 | 22 | Swagger 403 | `GET /usuarios` con token CLIENTE | CLIENTE | Respuesta 403 |
 | 23 | Swagger registro | `POST /auth/registro` con FELICES50 y fecha | — | Respuesta 201 con el usuario creado |
+| 24 | Vista previa del carrito | Cualquier página → clic en **Carrito** | `maria@duoc.cl` | Mini carrito con productos, subtotal y botones |
+| 25 | Menú de perfil | Cualquier página → clic en el avatar/nombre | `maria@duoc.cl` | Mi perfil, Seguimiento y Cerrar sesión |
 
 ## Documento de cobertura (Anaís)
 
 1. En `frontend/`: `npm run test:coverage` (si no hay Chrome, usar Edge con `CHROME_BIN`).
-2. Abrir `frontend/coverage/index.html` y capturar el resumen: **54 pruebas** y **93,79 % de sentencias / 89,09 % de ramas / 96,46 % de líneas**.
+2. Abrir `frontend/coverage/index.html` y capturar el resumen: **59 pruebas** y **94,03 % de sentencias / 87,02 % de ramas / 96,26 % de líneas**.
 3. Agregar que el backend tiene **21 pruebas** (`mvn clean verify`).
 4. El informe cubre componentes (`FormField`, `ProductCard`, `Avatar`), el carrito con `localStorage`, los cálculos de descuentos, los filtros, los validadores y las utilidades.
 
