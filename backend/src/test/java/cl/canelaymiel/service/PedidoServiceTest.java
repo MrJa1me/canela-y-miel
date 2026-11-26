@@ -2,6 +2,7 @@ package cl.canelaymiel.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -166,13 +167,29 @@ class PedidoServiceTest {
     }
 
     @Test
+    void creaPedidoDeMostradorSinDireccionNiTelefono() {
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                new PedidoRequest(1L, null, LocalDate.now(), null, "", true, List.of(
+                        new DetallePedidoRequest(10L, 1, null))),
+                cliente);
+
+        assertEquals(BigDecimal.ZERO, respuesta.envio());
+        assertEquals(new BigDecimal("10000"), respuesta.total());
+        assertEquals(null, respuesta.direccion());
+        assertEquals(null, respuesta.telefono());
+        assertTrue(respuesta.retiro());
+    }
+
+    @Test
     void rechazaFechaDeEntregaPasada() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(cliente));
         when(estadoPedidoRepository.findByOrden(1)).thenReturn(Optional.of(recibido));
 
         PedidoRequest request = new PedidoRequest(
                 1L, null, LocalDate.now().minusDays(1), "Av. Siempre Viva 123", "912345678",
-                List.of(new DetallePedidoRequest(10L, 1, null)));
+                false, List.of(new DetallePedidoRequest(10L, 1, null)));
 
         assertThrows(DatosInvalidosException.class, () -> pedidoService.crear(request, cliente));
         verify(pedidoRepository, never()).save(any(Pedido.class));
@@ -218,6 +235,6 @@ class PedidoServiceTest {
     private PedidoRequest pedido(String cupon, DetallePedidoRequest... detalles) {
         return new PedidoRequest(
                 1L, cupon, LocalDate.now().plusDays(1), "Av. Siempre Viva 123", "912345678",
-                List.of(detalles));
+                false, List.of(detalles));
     }
 }

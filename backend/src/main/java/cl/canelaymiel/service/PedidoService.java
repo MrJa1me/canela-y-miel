@@ -91,8 +91,10 @@ public class PedidoService {
         pedido.setEstado(estadoInicial);
         pedido.setFecha(LocalDateTime.now());
         pedido.setFechaEntrega(request.fechaEntrega());
-        pedido.setDireccion(request.direccion().trim());
-        pedido.setTelefono(request.telefono().trim());
+        pedido.setDireccion(limpiar(request.direccion()));
+        pedido.setTelefono(limpiar(request.telefono()));
+        boolean retiro = Boolean.TRUE.equals(request.retiro());
+        pedido.setRetiro(retiro);
         pedido.setCupon(cupon);
 
         BigDecimal subtotal = BigDecimal.ZERO;
@@ -140,8 +142,9 @@ public class PedidoService {
 
         pedido.setSubtotal(subtotal);
         pedido.setDescuento(descuento);
-        pedido.setEnvio(ENVIO);
-        pedido.setTotal(subtotal.subtract(descuento).add(ENVIO).setScale(0, RoundingMode.HALF_UP));
+        BigDecimal envio = retiro ? BigDecimal.ZERO : ENVIO;
+        pedido.setEnvio(envio);
+        pedido.setTotal(subtotal.subtract(descuento).add(envio).setScale(0, RoundingMode.HALF_UP));
 
         return PedidoResponse.desde(pedidoRepository.save(pedido));
     }
@@ -176,6 +179,10 @@ public class PedidoService {
 
     private boolean esAdmin(Usuario usuario) {
         return "ADMIN".equals(usuario.getRol().getNombre());
+    }
+
+    private String limpiar(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
     private Pedido buscar(Long id) {

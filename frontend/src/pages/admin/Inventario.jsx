@@ -40,6 +40,8 @@ export default function Inventario() {
   const [formulario, setFormulario] = useState(null) // null = formulario cerrado
   const [editandoId, setEditandoId] = useState(null)
   const [error, setError] = useState('')
+  const [busqueda, setBusqueda] = useState('')
+  const [soloStockBajo, setSoloStockBajo] = useState(false)
 
   async function cargar() {
     const [listaProductos, listaCategorias] = await Promise.all([
@@ -121,17 +123,50 @@ export default function Inventario() {
   if (error) return <p className="text-danger">{error}</p>
   if (!productos) return <p>Cargando…</p>
 
+  const visibles = productos.filter((producto) => {
+    const texto = busqueda.trim().toLowerCase()
+    const cumpleTexto = !texto
+      || producto.nombre.toLowerCase().includes(texto)
+      || (producto.codigo ?? '').toLowerCase().includes(texto)
+    const cumpleStock = !soloStockBajo || producto.stock <= 5
+    return cumpleTexto && cumpleStock
+  })
+
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <h1 className="h3 mb-0">Inventario</h1>
         <button className="btn btn-primary" type="button" onClick={abrirNuevo}>
           Nuevo producto
         </button>
       </div>
 
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <input
+          type="search"
+          className="form-control"
+          style={{ maxWidth: "320px" }}
+          placeholder="Buscar por nombre o código"
+          value={busqueda}
+          onChange={(evento) => setBusqueda(evento.target.value)}
+        />
+        <div className="form-check mb-0">
+          <input
+            id="solo-stock"
+            type="checkbox"
+            className="form-check-input"
+            checked={soloStockBajo}
+            onChange={(evento) => setSoloStockBajo(evento.target.checked)}
+          />
+          <label className="form-check-label small" htmlFor="solo-stock">
+            Solo stock bajo (5 o menos)
+          </label>
+        </div>
+        <span className="small text-body-secondary">{visibles.length} productos</span>
+      </div>
+
       {formulario && (
-        <div className="card border-0 shadow-sm mb-4">
+        <div className="card border-0 shadow-sm mb-4 tarjeta-admin">
           <div className="card-body">
             <h2 className="h5 mb-3">{editandoId ? 'Editar producto' : 'Nuevo producto'}</h2>
 
@@ -253,9 +288,9 @@ export default function Inventario() {
         </div>
       )}
 
-      <div className="card border-0 shadow-sm">
+      <div className="card border-0 shadow-sm tarjeta-admin">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle table-hover mb-0">
             <thead>
               <tr>
                 <th scope="col">Código</th>
@@ -267,7 +302,7 @@ export default function Inventario() {
               </tr>
             </thead>
             <tbody>
-              {productos.map((producto) => (
+              {visibles.map((producto) => (
                 <tr key={producto.id}>
                   <td className="text-nowrap">{producto.codigo ?? '—'}</td>
                   <td>
@@ -302,10 +337,10 @@ export default function Inventario() {
                 </tr>
               ))}
 
-              {productos.length === 0 && (
+              {visibles.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center text-body-secondary py-4">
-                    No hay productos registrados.
+                    No hay productos con esos filtros.
                   </td>
                 </tr>
               )}

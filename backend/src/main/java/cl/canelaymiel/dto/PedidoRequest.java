@@ -3,7 +3,6 @@ package cl.canelaymiel.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -20,12 +19,14 @@ public record PedidoRequest(
         @NotNull(message = "La fecha de entrega es obligatoria")
         @FutureOrPresent(message = "La fecha de entrega no puede ser pasada")
         @Schema(example = "2026-12-01") LocalDate fechaEntrega,
-        @NotBlank(message = "La dirección es obligatoria")
-        @Size(min = 5, max = 200, message = "Escribe la dirección completa")
-        @Schema(example = "Av. Siempre Viva 123") String direccion,
-        @NotBlank(message = "El teléfono es obligatorio")
-        @Pattern(regexp = "^9\\d{8}$", message = "El teléfono debe tener 9 dígitos y empezar con 9")
-        @Schema(example = "912345678") String telefono,
+        @Size(max = 200, message = "La dirección no puede superar los 200 caracteres")
+        @Schema(example = "Av. Siempre Viva 123", description = "Opcional en pedidos de mostrador")
+        String direccion,
+        @Pattern(regexp = "^$|^9\\d{8}$", message = "El teléfono debe tener 9 dígitos y empezar con 9")
+        @Schema(example = "912345678", description = "Opcional en pedidos de mostrador")
+        String telefono,
+        @Schema(example = "false", description = "true para retiro en el local (sin envío)")
+        Boolean retiro,
         @NotEmpty(message = "El pedido debe tener al menos un producto")
         @Valid List<DetallePedidoRequest> detalles) {
 }

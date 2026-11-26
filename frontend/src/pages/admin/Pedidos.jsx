@@ -14,6 +14,7 @@ const CLASE_ESTADO = {
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
+  const [busqueda, setBusqueda] = useState('')
   const [error, setError] = useState('')
 
   async function cargar() {
@@ -36,13 +37,28 @@ export default function Pedidos() {
   if (error) return <p className="text-danger">{error}</p>
   if (!pedidos) return <p>Cargando…</p>
 
-  const visibles = filtro === 'Todos' ? pedidos : pedidos.filter((pedido) => pedido.estado === filtro)
+  const visibles = pedidos.filter((pedido) => {
+    const cumpleEstado = filtro === 'Todos' || pedido.estado === filtro
+    const texto = busqueda.trim().toLowerCase()
+    const cumpleTexto = !texto
+      || pedido.cliente.toLowerCase().includes(texto)
+      || String(pedido.id).includes(texto)
+    return cumpleEstado && cumpleTexto
+  })
 
   return (
     <div>
       <h1 className="h3 mb-4">Pedidos</h1>
 
-      <div className="d-flex flex-wrap gap-2 mb-3">
+      <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
+        <input
+          type="search"
+          className="form-control form-control-sm"
+          style={{ maxWidth: '260px' }}
+          placeholder="Cliente o N° de pedido"
+          value={busqueda}
+          onChange={(evento) => setBusqueda(evento.target.value)}
+        />
         {['Todos', ...ESTADOS_PEDIDO].map((estado) => (
           <button
             key={estado}
@@ -55,14 +71,15 @@ export default function Pedidos() {
         ))}
       </div>
 
-      <div className="card border-0 shadow-sm">
+      <div className="card border-0 shadow-sm tarjeta-admin">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle table-hover mb-0">
             <thead>
               <tr>
                 <th scope="col">N° pedido</th>
                 <th scope="col">Cliente</th>
                 <th scope="col">Fecha</th>
+                <th scope="col">Entrega</th>
                 <th scope="col" className="text-end">Total</th>
                 <th scope="col">Estado</th>
                 <th scope="col" className="text-end">Acción</th>
@@ -77,6 +94,9 @@ export default function Pedidos() {
                     <td>#{pedido.id}</td>
                     <td>{pedido.cliente}</td>
                     <td>{pedido.fecha?.slice(0, 10)}</td>
+                    <td className="small">
+                      {pedido.retiro ? 'Retiro en local' : pedido.fechaEntrega ?? '—'}
+                    </td>
                     <td className="text-end">{formatearPrecio(pedido.total)}</td>
                     <td>
                       <span className={`badge ${CLASE_ESTADO[pedido.estado]}`}>{pedido.estado}</span>
@@ -96,8 +116,8 @@ export default function Pedidos() {
 
               {visibles.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="text-center text-body-secondary py-4">
-                    No hay pedidos en este estado.
+                  <td colSpan="7" className="text-center text-body-secondary py-4">
+                    No hay pedidos con esos filtros.
                   </td>
                 </tr>
               )}

@@ -62,6 +62,31 @@ h6 {
   background-color: var(--color-tarjeta);
 }
 
+/* Panel de administración */
+.tarjeta-admin {
+  background-color: var(--color-tarjeta);
+}
+
+/* Menú lateral del administrador */
+.menu-admin .nav-link {
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.7rem;
+}
+
+.menu-admin .nav-link.active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-secondary);
+}
+
+@media (min-width: 768px) {
+  .menu-admin {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    min-height: calc(100vh - 70px);
+  }
+}
+
 /* Todas las tarjetas con imagen usan el mismo alto (no salta el diseño). */
 .imagen-tarjeta {
   width: 100%;

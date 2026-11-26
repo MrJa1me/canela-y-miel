@@ -50,6 +50,9 @@ public class Pedido {
     @Column(length = 20)
     private String telefono;
 
+    // Pedido tomado en el local: no se cobra envío.
+    private Boolean retiro;
+
     @Column(nullable = false, precision = 12, scale = 0)
     private BigDecimal subtotal;
 

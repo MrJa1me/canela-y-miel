@@ -34,8 +34,11 @@ export default function LayoutAdmin() {
 
       <div className="container-fluid flex-grow-1 d-flex">
         <div className="row flex-grow-1 w-100">
-          <aside className="col-12 col-md-3 col-lg-2 bg-white border-end p-3">
+          <aside className="col-12 col-md-3 col-lg-2 bg-white border-end p-3 menu-admin">
             <nav className="nav flex-column gap-1">
+              <NavLink className={claseEnlace} to="/admin/mostrador">
+                Mostrador
+              </NavLink>
               <NavLink className={claseEnlace} to="/admin" end>
                 Dashboard
               </NavLink>
@@ -51,7 +54,7 @@ export default function LayoutAdmin() {
             </nav>
           </aside>
 
-          <main className="col-12 col-md-9 col-lg-10 p-4">
+          <main className="col-12 col-md-9 col-lg-10 p-4 pagina">
             <Outlet />
           </main>
         </div>
