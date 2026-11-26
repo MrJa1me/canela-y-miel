@@ -116,6 +116,8 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-22 | Perfil propio | Ver y editar nombre, teléfono, dirección, preferencias y avatar; cambiar la contraseña con la actual; solo el dueño de la cuenta | Cliente / Admin | Alta |
 | RF-23 | Compartir producto | Copiar el enlace del producto o compartirlo por WhatsApp desde su detalle | Visitante | Media |
 | RF-24 | Blog y recetas | Mostrar 3 tarjetas estáticas de recetas y consejos en el Home (contenido de demostración) | Visitante | Baja |
+| RF-25 | Boleta | Generar una vista imprimible del pedido con detalle, entrega y totales | Cliente | Media |
+| RF-26 | Mapa y entrega | Mostrar la ubicación de la tienda con OpenStreetMap en la confirmación y el seguimiento, junto a la fecha estimada | Cliente | Media |
 
 ## 4. Requisitos no funcionales
 

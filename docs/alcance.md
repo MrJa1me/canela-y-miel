@@ -60,7 +60,7 @@ Los cupones `MIEL10` (activo) y `CANELA20` (inactivo) se conservan porque sostie
 | Mejora | Decisión | Detalle |
 |---|---|---|
 | Marca | **Se mantiene "Canela & Miel"** | No se renombra el proyecto ni los identificadores técnicos |
-| Paleta y tipografías | **Se adopta la del caso** | Fondo `#FFF5E1`, acentos `#FFC0CB` y `#8B4513`, texto `#5D4037`; `#B0BEC5` solo en detalles por contraste; Lato + Pacifico |
+| Paleta y tipografías | **Se adopta la del caso, con una excepción** | Fondo `#FFF5E1`, acentos `#FFC0CB` y `#8B4513`, texto `#5D4037`; `#B0BEC5` solo en detalles por contraste; **Lato + Playfair Display** en vez de Pacifico, porque Pacifico superponía letras en tamaños pequeños |
 | Carrusel de productos | **Se implementa** | Carrusel de Bootstrap ya existente, reutilizado para tarjetas de producto en Home y relacionados |
 | Home más completa | **Se implementa** | Hero con promociones, 8 categorías, destacados, beneficios, historia, impacto comunitario, blog, CTA FELICES50 y footer |
 | Mapa | **Se implementa con `iframe` de OpenStreetMap** | Sin librerías ni claves. Ubicación de demostración: Santiago centro, Plaza de Armas (−33.4489 / −70.6693) en `src/config/tienda.js`, rotulada como dato de demostración |

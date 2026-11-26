@@ -10,7 +10,13 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 600;
+}
+
+/* La marca usa la fuente de títulos para mantener la identidad. */
+.navbar-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
 h4,
@@ -25,6 +31,44 @@ h6 {
   width: 100%;
   height: 220px;
   object-fit: cover;
+}
+
+/* Mapa embebido de OpenStreetMap */
+.mapa-tienda {
+  width: 100%;
+  height: 280px;
+  border: 0;
+  display: block;
+}
+
+/* Al imprimir la boleta, se oculta el resto de la página. */
+@media print {
+  .navbar,
+  .footer-canela,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .boleta,
+  .boleta * {
+    visibility: visible;
+  }
+
+  .boleta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 0 !important;
+  }
 }
 
 /* Dos líneas reservadas para el nombre: todas las tarjetas miden lo mismo. */

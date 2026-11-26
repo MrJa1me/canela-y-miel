@@ -367,5 +367,7 @@ Componente: setProductos(...) → React vuelve a dibujar
 - Los cupones se validan al crear el pedido y también con `GET /cupones/validar/{codigo}`, que es público y solo devuelve el porcentaje.
 - El pedido guarda fecha de entrega, dirección y teléfono; no hay cálculo de rutas ni geocodificación.
 - Los filtros y la búsqueda del catálogo se resuelven en el navegador sobre `GET /productos`; con un catálogo mucho más grande convendría moverlos a parámetros de consulta del backend.
+- El mapa usa un `iframe` público de OpenStreetMap con una **ubicación de demostración** (`src/config/tienda.js`); no hay geocodificación, API key ni cálculo de rutas. Si no hay internet, la dirección y el enlace de respaldo siguen visibles.
+- La boleta se imprime desde el navegador con `window.print()` y estilos `@media print`; no hay documento tributario real.
 - `spring.jpa.hibernate.ddl-auto=update` es cómodo para desarrollo; en producción se usarían migraciones.
 - El manual de usuario y el reporte de cobertura de pruebas corresponden a la otra integrante del equipo.

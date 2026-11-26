@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { listarPedidos } from "../../services/orderService";
 import LineaEstado from "../../components/LineaEstado";
+import MapaTienda from "../../components/MapaTienda";
 
 // Página de seguimiento: elige un pedido y muestra en qué paso va
 export default function Seguimiento() {
@@ -78,6 +79,19 @@ export default function Seguimiento() {
         Estado actual: <strong>{pedido.estado}</strong>
       </p>
       <LineaEstado estado={pedido.estado} />
+
+      <div className="row g-3 mt-1">
+        <div className="col-12 col-lg-7">
+          <p className="mb-1">
+            <strong>Entrega estimada:</strong>{" "}
+            {pedido.fechaEntrega ?? "Por coordinar"}
+          </p>
+          {pedido.direccion && (
+            <p className="small text-secondary">Dirección: {pedido.direccion}</p>
+          )}
+          <MapaTienda />
+        </div>
+      </div>
     </div>
   );
 }
