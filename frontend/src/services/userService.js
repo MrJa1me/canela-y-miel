@@ -12,3 +12,20 @@ export function actualizarRol(usuario, rol) {
     body: { nombre, correo, rol, premium, activo },
   })
 }
+
+// Perfil del dueño de la cuenta. Los errores se muestran en la misma pantalla.
+export function miPerfil() {
+  return solicitar('/usuarios/me')
+}
+
+export function actualizarMiPerfil(datos) {
+  return solicitar('/usuarios/me', { method: 'PUT', body: datos, silenciarError: true })
+}
+
+export function cambiarPassword(datos) {
+  return solicitar('/usuarios/me/password', {
+    method: 'PUT',
+    body: datos,
+    silenciarError: true,
+  })
+}

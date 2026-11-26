@@ -2,6 +2,7 @@
 node_modules/
 dist/
 target/
+coverage/
 *.log
 
 # Material de referencia del curso: no se edita ni se entrega

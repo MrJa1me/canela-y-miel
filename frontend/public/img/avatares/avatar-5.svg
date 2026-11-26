@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Cerezas">
+  <circle cx="48" cy="48" r="48" fill="#F7D6E0"/>
+  <circle cx="41" cy="55" r="14" fill="#D94F5C"/>
+  <circle cx="58" cy="59" r="10" fill="#B93B47"/>
+  <path d="M41 41c5-11 15-15 23-13" fill="none" stroke="#4E7B45" stroke-width="4" stroke-linecap="round"/>
+  <path d="M58 49c2-7 8-11 14-10" fill="none" stroke="#4E7B45" stroke-width="4" stroke-linecap="round"/>
+</svg>

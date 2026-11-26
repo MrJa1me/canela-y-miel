@@ -1,39 +1,45 @@
 /* Identidad visual de Canela & Miel y puente con Bootstrap. */
 
 :root {
-  /* Marca */
-  --color-primary: #f2b880; /* Miel */
-  --color-primary-soft: #fbe3d0;
-  --color-primary-hover: #e3a06b;
-  --color-secondary: #a0522d; /* Canela */
-  --color-secondary-hover: #8a4626;
-  --color-secondary-active: #7a3d21;
-  --color-tertiary: #4e342e; /* Cacao */
-  --color-neutral: #fff8ee;
-  --color-ink: #2e211b;
-  --color-inverted: #1f1410;
+  /* Paleta del caso */
+  --color-primary: #ffc0cb; /* Rosa suave */
+  --color-primary-soft: #ffe4ea;
+  --color-primary-hover: #f7a9b9;
+  --color-secondary: #8b4513; /* Chocolate */
+  --color-secondary-hover: #753a10;
+  --color-secondary-active: #5f2f0d;
+  --color-tertiary: #5d4037; /* Marrón oscuro */
+  --color-neutral: #fff5e1; /* Crema pastel */
+  --color-ink: #5d4037;
+  --color-inverted: #3e2723;
+  --color-shadow: rgba(93, 64, 55, 0.16);
+
+  /* Fondo base de todas las tarjetas. Cambia este valor para todas,
+     o una clase .tarjeta-* de global.css para una sección. */
+  --color-tarjeta: var(--color-neutral);
 
   /* Tipografías */
-  --font-display: 'Be Vietnam Pro', sans-serif;
-  --font-body: 'Source Sans 3', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Lato', sans-serif;
 
   /* Bootstrap */
   --bs-primary: var(--color-primary);
-  --bs-primary-rgb: 242, 184, 128;
+  --bs-primary-rgb: 255, 192, 203;
   --bs-secondary: var(--color-secondary);
-  --bs-secondary-rgb: 160, 82, 45;
+  --bs-secondary-rgb: 139, 69, 19;
   --bs-body-bg: var(--color-neutral);
   --bs-body-color: var(--color-ink);
   --bs-body-font-family: var(--font-body);
   --bs-heading-color: var(--color-tertiary);
   --bs-primary-bg-subtle: var(--color-primary-soft);
   --bs-primary-text-emphasis: var(--color-secondary);
+  --bs-card-bg: var(--color-tarjeta);
   --bs-link-color: var(--color-secondary);
   --bs-link-color-rgb: var(--bs-secondary-rgb);
   --bs-link-hover-color: var(--color-secondary-hover);
 }
 
-/* Botón principal: canela */
+/* Botón principal: chocolate */
 .btn-primary {
   --bs-btn-bg: var(--color-secondary);
   --bs-btn-border-color: var(--color-secondary);

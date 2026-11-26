@@ -6,10 +6,12 @@ function ResumenCarrito({
   descuento,
   envio,
   total,
-  etiquetaDescuento = "Descuento Premium (10%)",
+  etiquetaDescuento = "Descuentos aplicados",
 }) {
+  // Resumen del pedido (Carrito, Checkout y Confirmación).
+  // Fondo: clase .tarjeta-resumen en global.css.
   return (
-    <div className="card">
+    <div className="card tarjeta-resumen">
       <div className="card-body">
         <h2 className="h5 mb-3">Resumen del pedido</h2>
 

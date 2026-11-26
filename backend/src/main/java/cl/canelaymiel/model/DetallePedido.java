@@ -40,4 +40,8 @@ public class DetallePedido {
 
     @Column(nullable = false, precision = 12, scale = 0)
     private BigDecimal subtotal;
+
+    // Mensaje de personalización (solo tiene sentido en tortas).
+    @Column(length = 200)
+    private String mensaje;
 }

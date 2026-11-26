@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Cupcake rosa">
+  <circle cx="48" cy="48" r="48" fill="#FFC0CB"/>
+  <path d="M30 47a18 18 0 0 1 36 0z" fill="#FFF8EE"/>
+  <path d="M28 47h40l-5 21a7 7 0 0 1-7 6H40a7 7 0 0 1-7-6z" fill="#8B4513"/>
+  <path d="M34 57h28M34 65h28" stroke="#FFF8EE" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="48" cy="28" r="6" fill="#8B4513"/>
+</svg>

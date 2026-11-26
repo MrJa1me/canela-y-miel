@@ -16,6 +16,7 @@ import Dashboard from './pages/admin/Dashboard'
 import Inventario from './pages/admin/Inventario'
 import Pedidos from './pages/admin/Pedidos'
 import Usuarios from './pages/admin/Usuarios'
+import Mostrador from './pages/admin/Mostrador'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
       <Route element={<ProtectedRoute roles={['ADMIN']} />}>
         <Route path="/admin" element={<LayoutAdmin />}>
           <Route index element={<Dashboard />} />
+          <Route path="mostrador" element={<Mostrador />} />
           <Route path="inventario" element={<Inventario />} />
           <Route path="pedidos" element={<Pedidos />} />
           <Route path="usuarios" element={<Usuarios />} />

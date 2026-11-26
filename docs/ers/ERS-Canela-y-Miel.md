@@ -1,8 +1,8 @@
 # Especificación de Requisitos de Software (ERS)
 ## Canela & Miel — Tienda online de pastelería artesanal
 
-**Versión:** 1.0
-**Fecha:** 22/11/2026
+**Versión:** 2.0
+**Fecha:** 25/11/2026
 **Asignatura:** DSY1104 Desarrollo Fullstack II
 **Evaluaciones:** Parcial 2 y Parcial 3 (entrega conjunta)
 **Equipo:** Canela & Miel
@@ -19,15 +19,17 @@ Este documento especifica los requisitos funcionales y no funcionales del sistem
 
 El sistema incluye:
 
-- Catálogo público de productos.
-- Registro, inicio de sesión y sesión persistente con JWT.
-- Carrito y creación de pedidos con envío, descuento Premium y cupones.
-- Descuento de stock y flujo de estados del pedido.
+- Catálogo público del caso: 8 categorías, 16 productos con código, descripción y porciones.
+- Registro con fecha de nacimiento, código `FELICES50` y correo institucional Duoc.
+- Carrito y pedidos con fecha de entrega, dirección, teléfono, mensaje de personalización y envío.
+- Descuentos del caso: 50% mayores de 50, 10% FELICES50, cupón y torta de cumpleaños Duoc.
+- Perfil editable con avatar, preferencias y cambio de contraseña.
+- Seguimiento con stepper, mapa y boleta imprimible.
 - Panel de administración: dashboard, inventario, pedidos y usuarios.
 - API REST documentada en Swagger.
 - Base de datos MySQL en Docker.
 
-Quedan **fuera del alcance**: pasarela de pago real, facturación electrónica, POS y configuración avanzada de la tienda.
+Quedan **fuera del alcance**: pasarela de pago real, facturación electrónica, POS, notificaciones de estado en tiempo real, geocodificación de direcciones y subida de archivos.
 
 ### 1.3 Definiciones
 
@@ -56,7 +58,7 @@ Quedan **fuera del alcance**: pasarela de pago real, facturación electrónica, 
 
 ### 2.1 Contexto
 
-Canela & Miel es una pastelería artesanal que vende tortas, postres y productos sin gluten. El sistema reemplaza el prototipo estático de la Evaluación 1 por una aplicación fullstack: React en el cliente, Spring Boot en el servidor y MySQL como base de datos.
+Canela & Miel es una pastelería artesanal que vende tortas, postres y productos sin azúcar, sin gluten y veganos, en las 8 categorías del caso. El sistema reemplaza el prototipo estático de la Evaluación 1 por una aplicación fullstack: React en el cliente, Spring Boot en el servidor y MySQL como base de datos.
 
 ### 2.2 Objetivos
 
@@ -69,9 +71,10 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 
 | Actor | Descripción | Permisos |
 |---|---|---|
-| Visitante | Persona sin sesión | Ver catálogo, registrarse, iniciar sesión |
-| Cliente | Usuario con rol `CLIENTE` | Comprar, ver sus pedidos y su perfil |
+| Visitante | Persona sin sesión | Ver catálogo, registrarse, iniciar sesión, validar cupón |
+| Cliente | Usuario con rol `CLIENTE` | Comprar, ver sus pedidos, editar su perfil |
 | Cliente Premium | Cliente con `premium = true` | Lo anterior + 10% de descuento en productos |
+| Cliente Duoc | Cliente con correo `@duoc.cl`, `@duocuc.cl` o `@profesor.duoc.cl` | Torta más barata gratis el día de su cumpleaños, si el pedido trae otro producto pagado |
 | Administrador | Usuario con rol `ADMIN` | Todo el panel de administración |
 
 ### 2.4 Supuestos y dependencias
@@ -88,21 +91,39 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 - Entrega de ERS, documento de integración, manual de usuario y evidencias.
 - Presentación individual: cada integrante debe explicar su parte.
 
+### 2.6 Requerimientos del caso y alcance acordado
+
+El caso "Pastelería 1000 Sabores" y las dos rúbricas se revisaron antes de programar. El acuerdo completo, con el estado **"pendiente de validar por el docente"**, está en [`docs/alcance.md`](../alcance.md).
+
+| Requerimiento del caso | Decisión | Estado |
+|---|---|---|
+| 8 categorías y 16 productos con código y descripción | Implementado | Pendiente de validar |
+| 50% para mayores de 50 años | Implementado | Pendiente de validar |
+| Código FELICES50 (10% de por vida) | Implementado | Pendiente de validar |
+| Torta gratis Duoc en el cumpleaños | Implementado: la más barata, con otro producto pagado | Pendiente de validar |
+| Filtro por tipo de torta y tamaños | Implementado con categoría + porciones | Pendiente de validar |
+| Mensaje de personalización | Implementado, por torta | Pendiente de validar |
+| Fecha de entrega y boleta | Implementado con boleta imprimible | Pendiente de validar |
+| Compartir, búsqueda y blog | Implementado (blog de demostración) | Pendiente de validar |
+| Perfil con preferencias, avatar y recomendaciones | Implementado | Pendiente de validar |
+
+La regla de combinación de descuentos, la definición de "la torta", los avatares y los datos de demostración (porciones, ubicación del mapa, blog) están justificados en `docs/alcance.md`.
+
 ## 3. Requisitos funcionales
 
 | ID | Requisito | Descripción | Actor | Prioridad |
 |---|---|---|---|---|
-| RF-01 | Catálogo público | Mostrar productos con nombre, precio, categoría, stock e imagen sin exigir sesión | Visitante | Alta |
-| RF-02 | Filtros de catálogo | Filtrar por categoría y rango de precio | Visitante | Media |
-| RF-03 | Registro | Crear cuenta con nombre, correo único y contraseña de al menos 6 caracteres; asignar rol `CLIENTE` | Visitante | Alta |
+| RF-01 | Catálogo público | Mostrar productos con código, nombre, descripción, precio, categoría, porciones, stock e imagen sin exigir sesión | Visitante | Alta |
+| RF-02 | Filtros de catálogo | Filtrar por categoría, porciones máximas, rango de precio y búsqueda por nombre o código | Visitante | Media |
+| RF-03 | Registro | Crear cuenta con nombre, correo único, contraseña de al menos 6 caracteres, fecha de nacimiento y código promocional opcional; asignar rol `CLIENTE` | Visitante | Alta |
 | RF-04 | Inicio de sesión | Validar correo y contraseña con BCrypt y entregar access y refresh token | Todos | Alta |
 | RF-05 | Sesión persistente | Mantener la sesión al recargar la página | Cliente / Admin | Alta |
 | RF-06 | Renovación de sesión | Renovar el access token con el refresh token cuando vence | Cliente / Admin | Alta |
 | RF-07 | Cierre de sesión | Borrar los tokens del navegador y volver al estado público | Cliente / Admin | Alta |
 | RF-08 | Carrito | Agregar, quitar y cambiar cantidades de productos | Cliente | Alta |
-| RF-09 | Crear pedido | Registrar un pedido con uno o más productos y calcular subtotal, descuento, envío y total | Cliente | Alta |
-| RF-10 | Descuento Premium | Aplicar 10% de descuento a los productos si el cliente es Premium | Cliente Premium | Alta |
-| RF-11 | Cupones | Validar código activo y aplicar su porcentaje sobre el saldo | Cliente | Alta |
+| RF-09 | Crear pedido | Registrar un pedido con uno o más productos, fecha de entrega, dirección y teléfono (opcionales en mostrador), retiro en local y mensaje de la torta; calcular subtotal, descuento, envío y total | Cliente / Admin | Alta |
+| RF-10 | Descuentos del caso | Aplicar **solo el mayor** entre 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón | Cliente | Alta |
+| RF-11 | Cupones | Validar un código activo (público) y usarlo como candidato a descuento al crear el pedido | Cliente | Alta |
 | RF-12 | Stock | Descontar stock al crear el pedido y rechazar si no alcanza | Sistema | Alta |
 | RF-13 | Estados del pedido | Avanzar solo al estado siguiente del flujo definido | Administrador | Alta |
 | RF-14 | Mis pedidos | Mostrar al cliente únicamente sus propios pedidos | Cliente | Alta |
@@ -111,7 +132,14 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-17 | Pedidos (admin) | Listar, filtrar por estado y avanzar pedidos | Administrador | Alta |
 | RF-18 | Usuarios y roles | Listar usuarios y cambiar su rol entre `ADMIN` y `CLIENTE` | Administrador | Alta |
 | RF-19 | Restricciones por rol | Ocultar en el frontend lo que el rol no puede usar y validarlo en el backend | Sistema | Alta |
-| RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar | Sistema | Media |
+| RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar; completar el catálogo sin borrar datos | Sistema | Media |
+| RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños, solo si hay otro producto pagado | Cliente Duoc | Alta |
+| RF-22 | Perfil propio | Ver y editar nombre, teléfono, dirección, preferencias y avatar; cambiar la contraseña con la actual; solo el dueño de la cuenta | Cliente / Admin | Alta |
+| RF-23 | Compartir producto | Copiar el enlace del producto o compartirlo por WhatsApp desde su detalle | Visitante | Media |
+| RF-24 | Blog y recetas | Mostrar 3 tarjetas estáticas de recetas y consejos en el Home (contenido de demostración) | Visitante | Baja |
+| RF-25 | Boleta | Generar una vista imprimible del pedido con detalle, entrega y totales | Cliente | Media |
+| RF-26 | Mapa y entrega | Mostrar la ubicación de la tienda con OpenStreetMap en la confirmación y el seguimiento, junto a la fecha estimada | Cliente | Media |
+| RF-27 | Mostrador (POS) | Permitir al administrador crear pedidos para un cliente desde el local, con retiro sin envío, cupón y cálculo del servidor | Administrador | Media |
 
 ## 4. Requisitos no funcionales
 
@@ -122,7 +150,7 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RNF-03 | Seguridad | Contraseñas con BCrypt; JWT firmado; roles validados en el backend; CORS restringido a `localhost:5173` |
 | RNF-04 | Rendimiento | Las operaciones locales responden en menos de 1 segundo con la base de datos en Docker |
 | RNF-05 | Mantenibilidad | Capas controller → service → repository; nombres consistentes; comentarios cortos en español |
-| RNF-06 | Pruebas | Mínimo 10 pruebas Jasmine/Karma con cobertura; pruebas del backend para la lógica de pedidos y tokens |
+| RNF-06 | Pruebas | Mínimo 10 pruebas Jasmine/Karma con cobertura (hoy 59) y pruebas del backend para la lógica de pedidos, reglas y tokens (22) |
 | RNF-07 | Portabilidad | Funciona en Windows con Docker, JDK 17 y Node 20+; no depende de rutas absolutas |
 | RNF-08 | Accesibilidad | `label` asociado a cada campo, textos alternativos, contraste y foco visible |
 | RNF-09 | Persistencia | Los datos sobreviven a reinicios gracias al volumen de Docker |
@@ -132,26 +160,39 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 
 ### 5.1 Productos
 
-| Producto | Categoría | Precio |
-|---|---|---|
-| Torta de Chocolate Clásica | Tortas | $35.000 |
-| Tartaleta de Frutos Rojos | Postres | $28.000 |
-| Pancakes Sin Gluten | Sin gluten | $22.000 |
-| Cheesecake de Frutos Rojos | Postres | $30.000 |
-| Tres Leches Clásica | Tortas | $32.000 |
-| Pastel de Zanahoria | Tortas | $26.000 |
-| Caja de Macarons Variados (12 uds) | Postres | $42.000 |
+Catálogo del caso (8 categorías y 16 productos). Las porciones son un dato de demostración:
+el enunciado no entrega tamaños.
+
+| Código | Producto | Categoría | Porciones | Precio |
+|---|---|---|---|---|
+| TC001 | Torta Cuadrada de Chocolate | Tortas Cuadradas | 20 | $45.000 |
+| TC002 | Torta Cuadrada de Frutas | Tortas Cuadradas | 24 | $50.000 |
+| TT001 | Torta Circular de Vainilla | Tortas Circulares | 12 | $40.000 |
+| TT002 | Torta Circular de Manjar | Tortas Circulares | 16 | $42.000 |
+| PI001 | Mousse de Chocolate | Postres Individuales | 1 | $5.000 |
+| PI002 | Tiramisú Clásico | Postres Individuales | 1 | $5.500 |
+| PSA001 | Torta Sin Azúcar de Naranja | Productos Sin Azúcar | 12 | $48.000 |
+| PSA002 | Cheesecake Sin Azúcar | Productos Sin Azúcar | 10 | $47.000 |
+| PT001 | Empanada de Manzana | Pastelería Tradicional | 1 | $3.000 |
+| PT002 | Tarta de Santiago | Pastelería Tradicional | 8 | $6.000 |
+| PG001 | Brownie Sin Gluten | Productos Sin Gluten | 1 | $4.000 |
+| PG002 | Pan Sin Gluten | Productos Sin Gluten | 8 | $3.500 |
+| PV001 | Torta Vegana de Chocolate | Productos Vegana | 12 | $50.000 |
+| PV002 | Galletas Veganas de Avena | Productos Vegana | 12 | $4.500 |
+| TE001 | Torta Especial de Cumpleaños | Tortas Especiales | 30 | $55.000 |
+| TE002 | Torta Especial de Boda | Tortas Especiales | 40 | $60.000 |
 
 ### 5.2 Cálculo del pedido
 
 1. **Subtotal** = suma de `precio unitario × cantidad`.
-2. **Descuento Premium** = 10% del subtotal, solo si el cliente es Premium.
-3. **Saldo** = subtotal − descuento Premium.
-4. **Descuento por cupón** = porcentaje del cupón sobre el saldo.
+2. **Torta gratis Duoc** = precio de la torta más barata del pedido, solo si el cliente tiene correo institucional, hoy es su cumpleaños y el pedido trae al menos otro producto pagado.
+3. **Base** = subtotal − torta gratis.
+4. **Descuento porcentual** = **el mayor** entre: 50% (mayor de 50 años), 10% (`FELICES50` o Premium) y el porcentaje del cupón. Nunca se suman.
 5. **Envío** = $8.000 fijo.
-6. **Total** = subtotal − descuento Premium − descuento por cupón + envío.
+6. **Total** = subtotal − torta gratis − descuento porcentual + envío.
 
-Los valores se redondean a peso entero (sin decimales).
+Los valores se redondean a peso entero (sin decimales). El frontend usa la misma fórmula en
+`calcularTotales.js` para mostrar el resumen antes de confirmar.
 
 ### 5.3 Stock
 
@@ -175,17 +216,19 @@ Recibido → En preparación → Listo para despacho → En camino → Entregado
 - El código no distingue mayúsculas de minúsculas.
 - Debe existir y estar activo.
 - El porcentaje va entre 1 y 100.
+- `GET /cupones/validar/{codigo}` es público y solo devuelve el porcentaje, para que el checkout muestre el resumen correcto.
+- El cupón compite con los otros descuentos: se aplica solo si es el mayor.
 
 ## 6. Modelo de datos
 
 | Entidad | Campos principales | Relaciones |
 |---|---|---|
 | `Rol` | id, nombre (ADMIN/CLIENTE) | 1 rol → muchos usuarios |
-| `Usuario` | id, nombre, correo único, password (BCrypt), premium, activo | Muchos usuarios → 1 rol |
+| `Usuario` | id, nombre, correo único, password (BCrypt), teléfono, dirección, fecha de nacimiento, código promocional, correo institucional, preferencias, avatar, premium, activo | Muchos usuarios → 1 rol |
 | `Categoria` | id, nombre único | 1 categoría → muchos productos |
-| `Producto` | id, nombre, precio, stock, imagen, activo | Muchos productos → 1 categoría |
-| `Pedido` | id, fecha, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
-| `DetallePedido` | id, cantidad, precio unitario, subtotal | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
+| `Producto` | id, código único, nombre, descripción, precio, stock, porciones, imagen, activo | Muchos productos → 1 categoría |
+| `Pedido` | id, fecha, fecha de entrega, dirección, teléfono, retiro, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
+| `DetallePedido` | id, cantidad, precio unitario, subtotal, mensaje | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
 | `EstadoPedido` | id, nombre único, orden único | 1 estado → muchos pedidos |
 | `Cupon` | id, código único, porcentaje, activo | 1 cupón → muchos pedidos |
 
@@ -258,7 +301,7 @@ frontend/src/
 
 ## 8. API REST
 
-La API se documenta en detalle en `docs/integracion/documento-integracion.md` y en Swagger (`/swagger-ui.html`).
+La API se documenta en detalle en `docs/integracion/documento-integracion.md` y en Swagger (`/swagger-ui.html`). Hoy expone **33 operaciones**.
 
 | Recurso | Operaciones |
 |---|---|
@@ -266,8 +309,8 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 | Productos | listar, obtener, crear, actualizar, eliminar |
 | Categorías | listar, obtener, crear, actualizar, eliminar |
 | Pedidos | listar, obtener, crear, cambiar estado, eliminar |
-| Usuarios | listar, obtener, crear, actualizar, eliminar |
-| Cupones | listar, obtener, crear, actualizar, eliminar |
+| Usuarios | listar, obtener, crear, actualizar, eliminar, ver mi perfil, editar mi perfil, cambiar mi contraseña |
+| Cupones | listar, obtener, crear, actualizar, eliminar, validar por código (público) |
 
 ## 9. Seguridad
 
@@ -275,8 +318,8 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 - **Access token:** 15 minutos; contiene correo, rol, nombre e id.
 - **Refresh token:** 7 días; solo sirve para renovar.
 - **Filtro JWT:** valida la firma en cada petición y carga el usuario desde la base para respetar cambios de rol o desactivación.
-- **Reglas por ruta:** catálogo público; pedidos con sesión; usuarios, cupones y mutaciones del catálogo solo para `ADMIN`.
-- **Reglas por fila:** un `CLIENTE` solo ve y crea pedidos propios; si intenta otro, recibe **403**.
+- **Reglas por ruta:** catálogo y validación de cupón públicos; pedidos y `/usuarios/me` con sesión; usuarios, cupones y mutaciones del catálogo solo para `ADMIN`.
+- **Reglas por fila:** un `CLIENTE` solo ve y crea pedidos propios y solo edita su propio perfil; si intenta otro, recibe **403**.
 - **CORS:** solo `http://localhost:5173`.
 - **Frontend:** `ProtectedRoute` y menús condicionados por rol; el backend igual valida.
 
@@ -284,42 +327,49 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 
 ### 10.1 Backend
 
-6 pruebas unitarias con JUnit y Mockito:
+**22 pruebas unitarias** con JUnit y Mockito (`mvn clean verify`):
 
-| Prueba | Qué verifica |
+| Clase | Qué verifica |
 |---|---|
-| Cálculo con Premium y cupón | Subtotal, descuentos, envío y total |
-| Stock insuficiente | Rechazo con 409 y stock intacto |
-| Salto de estado | Rechazo de un estado que no sigue el flujo |
-| Token de acceso | Tipo, rol y correo |
-| Refresh token | No sirve como access |
-| Firma ajena | Un token de otra clave se rechaza |
+| `PedidoServiceTest` (10) | Descuento 10%, 50%, FELICES50, combinación con cupón, torta Duoc, torta única sin regalo, retiro sin envío y sin dirección, fecha pasada, stock insuficiente y salto de estado |
+| `ReglasClienteTest` (4) | Edad, mayoría de 50, cumpleaños por día/mes y correos institucionales |
+| `UsuarioServiceTest` (5) | Edición del perfil, limpieza de campos, avatar inválido y cambio de contraseña |
+| `JwtServiceTest` (3) | Token de acceso, refresh y firma ajena |
 
 ### 10.2 Frontend
 
-Requisito pendiente de la otra integrante: mínimo **10 pruebas Jasmine/Karma** con mocks y reporte de cobertura (`karma-coverage`). Deben cubrir, al menos:
+**59 pruebas** con Jasmine + Karma, con mocks de `localStorage` y espías de funciones:
 
-- Renderizado de un componente con props.
-- Cambio de estado tras una interacción.
-- Formulario inválido y válido.
-- Llamada a un servicio con mock.
-- Renderizado condicional por rol.
-- Cálculo de totales en el carrito.
-- Filtro de productos.
-- Manejo de error de la API.
+| Archivo | Qué cubre |
+|---|---|
+| `test/components/` | `FormField`, `ProductCard`, `Avatar`, `PanelDesplegable`, `Desplegable` y `MiniCarrito` (props, render, eventos y menús) |
+| `test/context/CartContext.spec.jsx` | Carrito, `localStorage` y mensaje por producto |
+| `test/utils/calcularTotales.spec.js` | Envío, Premium, 50%, FELICES50, cupón, solo el mayor y torta gratis |
+| `test/utils/descuentos.spec.js` | Edad, cumpleaños, correo institucional y beneficios del usuario |
+| `test/utils/filtros.spec.js` | Categoría, precio, porciones, búsqueda por nombre/código y recomendaciones |
+| `test/utils/validators.spec.js` | Correo, teléfono chileno, largos y contraseñas |
+| `test/utils/formatPrice.spec.js` | Formato de pesos |
+| `test/utils/avatares.spec.js` | Iniciales y lista de avatares |
+| `test/utils/agruparEnFilas.spec.js` | Agrupación para el carrusel |
+| `test/utils/tienda.spec.js` | URL del mapa de OpenStreetMap |
+
+Comando del reporte: `npm run test:coverage` (genera `frontend/coverage/`). Última medición sobre el código cubierto por las pruebas: **94,03% de sentencias, 87,02% de ramas y 96,26% de líneas**.
 
 ### 10.3 Pruebas manuales de aceptación
 
-1. Registro y login.
-2. Recarga de la página con sesión activa.
-3. Token vencido → renovación automática.
-4. Cliente no puede entrar a `/admin` ni ver pedidos ajenos.
-5. Admin crea, edita y elimina un producto.
-6. Pedido con cupón y cliente Premium → total correcto.
-7. Pedido sin stock → error y stock intacto.
-8. Cambio de estado fuera de orden → error.
-9. Eliminar pedido → stock restaurado.
-10. Cierre de sesión.
+1. Instalación desde cero: clonar, copiar `.env.example`, `docker compose up -d`, backend y frontend.
+2. Registro con fecha de nacimiento y código `FELICES50`; registro con correo `@duoc.cl`.
+3. Login, recarga de la página con sesión activa y renovación del token.
+4. Cliente no puede entrar a `/admin` ni ver pedidos ajenos; `/usuarios/me` solo edita su cuenta.
+5. Admin crea, edita y elimina un producto, una categoría y un cupón.
+6. Pedido de mayor de 50, con FELICES50, con cupón, de cumpleaños Duoc y combinación: se aplica solo el mayor.
+7. Fecha de entrega pasada y pedido sin stock → error, sin cambios.
+8. Cambio de estado fuera de orden → error; eliminar pedido → stock restaurado.
+9. Perfil: editar datos, elegir avatar, guardar preferencias y cambiar contraseña.
+10. Catálogo: filtros por categoría, porciones y precio; búsqueda por nombre y código; compartir.
+11. Confirmación: fecha de entrega, mapa, boleta imprimible y seguimiento con stepper.
+12. Mostrador: crear un pedido con retiro (sin envío) y otro con despacho; el stock y el total cambian.
+13. Cierre de sesión y vuelta al estado público.
 
 ## 11. Despliegue y operación
 
@@ -343,25 +393,28 @@ Usuarios de prueba:
 |---|---|---|
 | EP2 — Proyecto con framework JS (IE2.1.1) | React + Vite + Router, estructura por capas | Cumplido |
 | EP2 — Componentes con props/estados y Bootstrap (IE2.1.2) | Componentes del admin, `NavBar`, `ProtectedRoute`, grillas y tablas responsivas | Cumplido |
-| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Pendiente (compañera) |
-| EP2 — Proceso de testeo y cobertura (IE2.3.x) | Configuración Karma + reporte | Pendiente (compañera) |
+| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Cumplido: 59 pruebas |
+| EP2 — Proceso de testeo y cobertura (IE2.3.x) | Configuración Karma + reporte | Cumplido: `npm run test:coverage` |
 | EP3 — Backend, base de datos, lógica y modelos (IE3.1.1) | Entidades, servicios y MySQL | Cumplido |
-| EP3 — API REST con CRUD y Swagger (IE3.2.1) | 29 operaciones documentadas | Cumplido |
+| EP3 — API REST con CRUD y Swagger (IE3.2.1) | 33 operaciones documentadas | Cumplido |
 | EP3 — Integración frontend–backend (IE3.2.2) | Capa `services/` y pantallas reales | Cumplido |
 | EP3 — Roles y JWT (IE3.3.1) | `security/` y `/auth` | Cumplido |
 | EP3 — Sesión persistente (IE3.3.2) | `AuthContext` + refresh | Cumplido |
 | EP3 — Restricciones por rol (IE3.3.3) | `ProtectedRoute` + reglas del backend | Cumplido |
-| Documentos | Integración, ERS, manual y cobertura | Integración y ERS listos; manual y cobertura pendientes |
+| Documentos | Integración, ERS, manual y cobertura | Integración y ERS actualizados; manual por actualizar capturas; reporte de cobertura generado |
 
 ## 13. Riesgos y trabajo pendiente
 
 | Riesgo o pendiente | Impacto | Mitigación |
 |---|---|---|
-| Manual de usuario y cobertura de pruebas | Indicadores de la EP2/EP3 | Los prepara la otra integrante; revisar antes de entregar |
+| Manual de usuario y cobertura | Indicadores de la EP2/EP3 | El manual existe en `docs/` y hay que actualizar sus capturas; el reporte de cobertura se genera con `npm run test:coverage` |
+| Mapa de demostración | El pin no corresponde a una dirección real del negocio | Está marcado como demostración en `src/config/tienda.js` y en pantalla |
+| Notificaciones de estado | No hay aviso en tiempo real | El seguimiento se actualiza al recargar; documentado en el alcance |
+| Boleta | Depende del diálogo de impresión del navegador | Se probó el contenido y los estilos `@media print`; el documento no tiene valor tributario |
 | Refresh token sin revocación | Un token robado sirve 7 días | Aceptado para el alcance; se podría agregar una tabla de revocación |
 | Token en `localStorage` | Vulnerable a XSS | No se inyecta HTML de terceros; se podría migrar a cookie `httpOnly` |
 | `ddl-auto=update` | Cambios de esquema sin control | Usar migraciones (Flyway) en un entorno real |
-| Datos de demostración | El dashboard se ve vacío sin pedidos | Crear pedidos durante la presentación |
+| Datos de demostración | El dashboard se ve vacío sin pedidos | La semilla crea 14 pedidos en una base nueva; si ya hay pedidos, se conserva la base |
 | Dependencia de Docker | Sin Docker no hay base de datos | El README explica la instalación y el volumen |
 
 ## 14. Glosario de archivos clave
@@ -369,11 +422,15 @@ Usuarios de prueba:
 | Archivo | Función |
 |---|---|
 | `backend/config/DatosSemilla.java` | Crea los datos iniciales |
-| `backend/service/PedidoService.java` | Totales, stock y estados |
+| `backend/service/PedidoService.java` | Totales, descuentos, torta Duoc, stock y estados |
+| `backend/service/ReglasCliente.java` | Edad, cumpleaños, correo institucional y avatares |
 | `backend/security/JwtService.java` | Firma y valida tokens |
 | `backend/security/ConfiguracionSeguridad.java` | Reglas de acceso y CORS |
 | `frontend/services/api.js` | Única salida HTTP y renovación |
 | `frontend/context/AuthContext.jsx` | Sesión global y persistencia |
+| `frontend/utils/calcularTotales.js` | La misma fórmula de totales que el backend |
+| `frontend/config/tienda.js` | Ubicación de demostración para el mapa |
+| `frontend/components/MapaTienda.jsx` | Mapa público de OpenStreetMap |
 | `frontend/components/ProtectedRoute.jsx` | Rutas con sesión y rol |
 | `docker-compose.yml` | MySQL y Adminer |
 | `docs/integracion/documento-integracion.md` | Detalle de la API |

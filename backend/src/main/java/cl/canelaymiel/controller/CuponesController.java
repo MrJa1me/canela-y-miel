@@ -30,7 +30,11 @@ public class CuponesController {
     private final CuponService cuponService;
 
     @Operation(summary = "Listar cupones")
-    @ApiResponse(responseCode = "200", description = "Lista de cupones")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de cupones"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN")
+    })
     @GetMapping
     public List<CuponResponse> listar() {
         return cuponService.listar();
@@ -39,6 +43,8 @@ public class CuponesController {
     @Operation(summary = "Obtener un cupón por su id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Cupón encontrado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Cupón no encontrado")
     })
     @GetMapping("/{id}")
@@ -46,10 +52,23 @@ public class CuponesController {
         return cuponService.obtener(id);
     }
 
+    @Operation(summary = "Validar un cupón por su código",
+            description = "Público: permite mostrar el descuento antes de confirmar el pedido.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cupón válido"),
+            @ApiResponse(responseCode = "400", description = "El cupón no existe o está inactivo")
+    })
+    @GetMapping("/validar/{codigo}")
+    public CuponResponse validar(@PathVariable String codigo) {
+        return cuponService.validar(codigo);
+    }
+
     @Operation(summary = "Crear un cupón")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Cupón creado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "409", description = "El código ya existe")
     })
     @PostMapping
@@ -62,6 +81,8 @@ public class CuponesController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Cupón actualizado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Cupón no encontrado"),
             @ApiResponse(responseCode = "409", description = "El código ya existe")
     })
@@ -73,6 +94,8 @@ public class CuponesController {
     @Operation(summary = "Eliminar un cupón")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Cupón eliminado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Cupón no encontrado"),
             @ApiResponse(responseCode = "409", description = "El cupón tiene pedidos asociados")
     })

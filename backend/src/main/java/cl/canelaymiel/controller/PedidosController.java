@@ -33,7 +33,10 @@ public class PedidosController {
     private final PedidoService pedidoService;
 
     @Operation(summary = "Listar pedidos")
-    @ApiResponse(responseCode = "200", description = "Lista de pedidos")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de pedidos"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión")
+    })
     @GetMapping
     public List<PedidoResponse> listar(@AuthenticationPrincipal Usuario usuario) {
         return pedidoService.listar(usuario);
@@ -42,6 +45,8 @@ public class PedidosController {
     @Operation(summary = "Obtener un pedido por su id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pedido encontrado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "El pedido es de otro cliente"),
             @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
     })
     @GetMapping("/{id}")
@@ -50,10 +55,12 @@ public class PedidosController {
     }
 
     @Operation(summary = "Crear un pedido",
-            description = "Calcula subtotal, descuento Premium, cupón y envío, y descuenta el stock.")
+            description = "Aplica la torta gratis Duoc y el mayor descuento (50%, 10% o cupón), y descuenta el stock.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Pedido creado"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos o cupón inválido"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos, cupón inválido o fecha pasada"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "El cliente no es el autenticado"),
             @ApiResponse(responseCode = "404", description = "Cliente o producto no encontrado"),
             @ApiResponse(responseCode = "409", description = "Stock insuficiente")
     })
@@ -67,6 +74,8 @@ public class PedidosController {
             description = "Solo permite avanzar al estado siguiente del flujo.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Estado actualizado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Pedido no encontrado"),
             @ApiResponse(responseCode = "409", description = "El estado no sigue el orden del flujo")
     })
@@ -78,6 +87,8 @@ public class PedidosController {
     @Operation(summary = "Eliminar un pedido", description = "Devuelve el stock de sus productos.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Pedido eliminado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
     })
     @DeleteMapping("/{id}")

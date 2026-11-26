@@ -31,7 +31,8 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registro(RegistroRequest request) {
-        if (usuarioRepository.findByCorreoIgnoreCase(request.correo().trim()).isPresent()) {
+        String correo = request.correo().trim().toLowerCase();
+        if (usuarioRepository.findByCorreoIgnoreCase(correo).isPresent()) {
             throw new ConflictoException("El correo ya está registrado");
         }
 
@@ -40,11 +41,15 @@ public class AuthService {
 
         Usuario usuario = new Usuario(
                 request.nombre().trim(),
-                request.correo().trim().toLowerCase(),
+                correo,
                 passwordEncoder.encode(request.password()),
                 false,
                 true,
                 rolCliente);
+
+        usuario.setFechaNacimiento(request.fechaNacimiento());
+        usuario.setCodigoPromocional(normalizarCodigo(request.codigoPromocional()));
+        usuario.setCorreoInstitucional(ReglasCliente.esCorreoInstitucional(correo));
 
         usuarioRepository.save(usuario);
         return respuesta(usuario);
@@ -90,5 +95,19 @@ public class AuthService {
                 jwtService.generarAcceso(usuario),
                 jwtService.generarRefresh(usuario),
                 UsuarioResponse.desde(usuario));
+    }
+
+    // Solo se acepta el código del caso; cualquier otro es un error de tipeo del cliente.
+    private String normalizarCodigo(String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            return null;
+        }
+
+        String normalizado = codigo.trim().toUpperCase();
+        if (!ReglasCliente.CODIGO_FELICES50.equals(normalizado)) {
+            throw new DatosInvalidosException("El código promocional no es válido");
+        }
+
+        return normalizado;
     }
 }

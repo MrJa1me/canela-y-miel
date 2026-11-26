@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,29 @@ public class Usuario {
     // Siempre se guarda con BCrypt, nunca en texto plano.
     @Column(nullable = false)
     private String password;
+
+    private LocalDate fechaNacimiento;
+
+    // Código con el que se registró (por ahora solo FELICES50).
+    @Column(length = 30)
+    private String codigoPromocional;
+
+    // Se calcula al registrarse: sirve para la torta gratis de cumpleaños.
+    private Boolean correoInstitucional;
+
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(length = 200)
+    private String direccion;
+
+    // Categorías favoritas separadas por coma. Se editan en el perfil.
+    @Column(length = 500)
+    private String preferencias;
+
+    // Avatar predefinido (ruta de /img/avatares). Nulo = iniciales.
+    @Column(length = 100)
+    private String avatar;
 
     @Column(nullable = false)
     private boolean premium;

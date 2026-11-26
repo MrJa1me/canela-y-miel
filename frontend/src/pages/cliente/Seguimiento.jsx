@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { listarPedidos } from "../../services/orderService";
 import LineaEstado from "../../components/LineaEstado";
+import MapaTienda from "../../components/MapaTienda";
 
 // Página de seguimiento: elige un pedido y muestra en qué paso va
 export default function Seguimiento() {
@@ -19,7 +20,7 @@ export default function Seguimiento() {
         const lista = await listarPedidos();
         setPedidos([...lista].sort((a, b) => b.id - a.id));
       } catch {
-        setError("No pudimos cargar tus pedidos. Intenta más tarde.");
+        setError("Ocurrió un error al cargar tus pedidos. Intenta nuevamente.");
       } finally {
         setCargando(false);
       }
@@ -78,6 +79,19 @@ export default function Seguimiento() {
         Estado actual: <strong>{pedido.estado}</strong>
       </p>
       <LineaEstado estado={pedido.estado} />
+
+      <div className="row g-3 mt-1">
+        <div className="col-12 col-lg-7">
+          <p className="mb-1">
+            <strong>Entrega estimada:</strong>{" "}
+            {pedido.fechaEntrega ?? "Por coordinar"}
+          </p>
+          {pedido.direccion && (
+            <p className="small text-secondary">Dirección: {pedido.direccion}</p>
+          )}
+          <MapaTienda />
+        </div>
+      </div>
     </div>
   );
 }

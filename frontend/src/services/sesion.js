@@ -25,6 +25,11 @@ export function leerUsuario() {
   }
 }
 
+// Guarda el usuario actualizado (por ejemplo, después de editar el perfil).
+export function guardarUsuario(usuario) {
+  localStorage.setItem(USUARIO, JSON.stringify(usuario))
+}
+
 export function limpiarSesion() {
   localStorage.removeItem(TOKEN)
   localStorage.removeItem(REFRESH)

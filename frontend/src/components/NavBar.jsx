@@ -1,12 +1,27 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
+import Avatar from './Avatar'
+import Desplegable from './Desplegable'
+import MiniCarrito from './MiniCarrito'
 
 // Devuelve la clase de Bootstrap para marcar el enlace activo.
 const claseEnlace = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
 
 export default function NavBar() {
   const { usuario, cerrarSesion } = useAuth()
+  const { items } = useCart()
   const navegar = useNavigate()
+  const ubicacion = useLocation()
+  const [menuAbierto, setMenuAbierto] = useState(false)
+
+  const unidades = items.reduce((total, item) => total + item.cantidad, 0)
+
+  // En móvil, el menú se cierra solo al cambiar de página.
+  useEffect(() => {
+    setMenuAbierto(false)
+  }, [ubicacion.pathname])
 
   function salir() {
     cerrarSesion()
@@ -14,7 +29,7 @@ export default function NavBar() {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-canela" data-bs-theme="dark">
+    <nav className="navbar navbar-expand-lg navbar-canela">
       <div className="container">
         <Link className="navbar-brand" to="/">
           Canela &amp; Miel
@@ -23,16 +38,15 @@ export default function NavBar() {
         <button
           className="navbar-toggler"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#menuPrincipal"
+          onClick={() => setMenuAbierto(!menuAbierto)}
           aria-controls="menuPrincipal"
-          aria-expanded="false"
+          aria-expanded={menuAbierto}
           aria-label="Abrir menú"
         >
           <span className="navbar-toggler-icon" />
         </button>
 
-        <div className="collapse navbar-collapse" id="menuPrincipal">
+        <div className={`collapse navbar-collapse${menuAbierto ? ' show' : ''}`} id="menuPrincipal">
           <ul className="navbar-nav ms-auto align-items-lg-center">
             <li className="nav-item">
               <NavLink className={claseEnlace} to="/" end>
@@ -44,41 +58,54 @@ export default function NavBar() {
                 Catálogo
               </NavLink>
             </li>
+
             <li className="nav-item">
-              <NavLink className={claseEnlace} to="/carrito">
-                Carrito
-              </NavLink>
+              <Desplegable
+                claseBoton="nav-link d-inline-flex align-items-center gap-1"
+                claseMenu="mini-carrito-menu"
+                alineadoDerecha
+                boton={
+                  <>
+                    Carrito
+                    {unidades > 0 && (
+                      <span
+                        key={unidades}
+                        className="badge rounded-pill contador-carrito"
+                        aria-label={`${unidades} productos en el carrito`}
+                      >
+                        {unidades}
+                      </span>
+                    )}
+                  </>
+                }
+              >
+                <MiniCarrito />
+              </Desplegable>
             </li>
 
             {usuario ? (
-              <>
-                <li className="nav-item">
-                  <NavLink className={claseEnlace} to="/perfil">
-                    Mi perfil
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink className={claseEnlace} to="/seguimiento">
-                    Seguimiento
-                  </NavLink>
-                </li>
-                {usuario.rol === 'ADMIN' && (
-                  <li className="nav-item">
-                    <NavLink className={claseEnlace} to="/admin">
-                      Panel admin
-                    </NavLink>
-                  </li>
-                )}
-                <li className="nav-item">
-                  <button
-                    type="button"
-                    className="nav-link bg-transparent border-0"
-                    onClick={salir}
-                  >
-                    Salir
+              <li className="nav-item">
+                <Desplegable
+                  claseBoton="nav-link d-inline-flex align-items-center gap-1"
+                  alineadoDerecha
+                  boton={
+                    <>
+                      <Avatar usuario={usuario} tamano={24} />
+                      <span className="d-none d-lg-inline">{usuario.nombre.split(' ')[0]}</span>
+                    </>
+                  }
+                >
+                  <Link className="dropdown-item" to="/perfil">Mi perfil</Link>
+                  <Link className="dropdown-item" to="/seguimiento">Seguimiento</Link>
+                  {usuario.rol === 'ADMIN' && (
+                    <Link className="dropdown-item" to="/admin">Panel admin</Link>
+                  )}
+                  <hr className="dropdown-divider" />
+                  <button type="button" className="dropdown-item" onClick={salir}>
+                    Cerrar sesión
                   </button>
-                </li>
-              </>
+                </Desplegable>
+              </li>
             ) : (
               <>
                 <li className="nav-item">

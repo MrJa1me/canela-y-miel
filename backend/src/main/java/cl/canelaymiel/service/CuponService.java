@@ -3,6 +3,7 @@ package cl.canelaymiel.service;
 import cl.canelaymiel.dto.CuponRequest;
 import cl.canelaymiel.dto.CuponResponse;
 import cl.canelaymiel.exception.ConflictoException;
+import cl.canelaymiel.exception.DatosInvalidosException;
 import cl.canelaymiel.exception.RecursoNoEncontradoException;
 import cl.canelaymiel.model.Cupon;
 import cl.canelaymiel.repository.CuponRepository;
@@ -25,6 +26,15 @@ public class CuponService {
     @Transactional(readOnly = true)
     public CuponResponse obtener(Long id) {
         return CuponResponse.desde(buscar(id));
+    }
+
+    // Público: el cliente necesita saber el porcentaje antes de confirmar el pedido.
+    @Transactional(readOnly = true)
+    public CuponResponse validar(String codigo) {
+        return cuponRepository.findByCodigoIgnoreCase(codigo.trim())
+                .filter(Cupon::isActivo)
+                .map(CuponResponse::desde)
+                .orElseThrow(() -> new DatosInvalidosException("El cupón no existe o está inactivo"));
     }
 
     @Transactional

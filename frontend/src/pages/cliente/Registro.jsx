@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { hoyISO } from '../../utils/descuentos'
 import FormField from '../../components/FormField'
 import {
   coincidenContrasenas,
@@ -13,7 +14,14 @@ export default function Registro() {
   const { registrarse } = useAuth()
   const navegar = useNavigate()
 
-  const [datos, setDatos] = useState({ nombre: '', correo: '', password: '', confirmar: '' })
+  const [datos, setDatos] = useState({
+    nombre: '',
+    correo: '',
+    fechaNacimiento: '',
+    codigoPromocional: '',
+    password: '',
+    confirmar: '',
+  })
   const [errores, setErrores] = useState({})
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -31,6 +39,11 @@ export default function Registro() {
     }
     if (!esEmailValido(datos.correo.trim())) {
       nuevos.correo = 'Ingresa un correo válido'
+    }
+    if (!datos.fechaNacimiento) {
+      nuevos.fechaNacimiento = 'La fecha de nacimiento es obligatoria'
+    } else if (datos.fechaNacimiento >= hoyISO()) {
+      nuevos.fechaNacimiento = 'La fecha debe ser anterior a hoy'
     }
     if (!tieneLargoMinimo(datos.password, 6)) {
       nuevos.password = 'Mínimo 6 caracteres'
@@ -55,6 +68,8 @@ export default function Registro() {
         nombre: datos.nombre.trim(),
         correo: datos.correo.trim(),
         password: datos.password,
+        fechaNacimiento: datos.fechaNacimiento,
+        codigoPromocional: datos.codigoPromocional.trim() || null,
       })
       navegar('/perfil', { replace: true })
     } catch (fallo) {
@@ -79,6 +94,12 @@ export default function Registro() {
                   onChange={manejarCambio} error={errores.nombre} />
                 <FormField id="correo" label="Correo" type="email" autoComplete="email"
                   value={datos.correo} onChange={manejarCambio} error={errores.correo} />
+                <FormField id="fechaNacimiento" label="Fecha de nacimiento" type="date"
+                  value={datos.fechaNacimiento} onChange={manejarCambio}
+                  error={errores.fechaNacimiento} min="1900-01-01" required />
+                <FormField id="codigoPromocional" label="Código promocional (opcional)"
+                  value={datos.codigoPromocional} onChange={manejarCambio}
+                  placeholder="FELICES50" />
                 <FormField id="password" label="Contraseña" type="password"
                   autoComplete="new-password" value={datos.password}
                   onChange={manejarCambio} error={errores.password} />
@@ -90,6 +111,11 @@ export default function Registro() {
                   {enviando ? 'Creando…' : 'Crear cuenta'}
                 </button>
               </form>
+
+              <p className="small text-secondary mt-3 mb-0">
+                Con <strong>FELICES50</strong> mantienes 10% de descuento. Si usas tu correo
+                <strong> @duoc.cl</strong>, tu torta de cumpleaños es gratis.
+              </p>
 
               <p className="small mt-3 mb-0">
                 ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>

@@ -2,6 +2,7 @@ package cl.canelaymiel.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import cl.canelaymiel.dto.DetallePedidoRequest;
 import cl.canelaymiel.dto.PedidoRequest;
 import cl.canelaymiel.dto.PedidoResponse;
 import cl.canelaymiel.exception.ConflictoException;
+import cl.canelaymiel.exception.DatosInvalidosException;
 import cl.canelaymiel.model.Categoria;
 import cl.canelaymiel.model.Cupon;
 import cl.canelaymiel.model.EstadoPedido;
@@ -25,6 +27,7 @@ import cl.canelaymiel.repository.PedidoRepository;
 import cl.canelaymiel.repository.ProductoRepository;
 import cl.canelaymiel.repository.UsuarioRepository;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,36 +58,141 @@ class PedidoServiceTest {
     private Usuario cliente;
     private Producto producto;
     private EstadoPedido recibido;
+    private Categoria categoria;
 
     @BeforeEach
     void preparar() {
-        cliente = new Usuario("Cliente", "cliente@correo.cl", "clave", true, true, new Rol("CLIENTE"));
+        cliente = new Usuario("Cliente", "cliente@correo.cl", "clave", false, true, new Rol("CLIENTE"));
         cliente.setId(1L);
 
-        producto = new Producto("Torta", new BigDecimal("10000"), 5, "/img/chocolate.jpg", new Categoria("Tortas"), true);
+        categoria = new Categoria("Tortas Cuadradas");
+        producto = new Producto("Torta Cuadrada de Chocolate", new BigDecimal("10000"), 5, "/img/chocolate.jpg", categoria, true);
         producto.setId(10L);
 
         recibido = new EstadoPedido("Recibido", 1);
     }
 
     @Test
-    void creaPedidoConDescuentoPremiumYCupon() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(estadoPedidoRepository.findByOrden(1)).thenReturn(Optional.of(recibido));
+    void clientePremiumRecibeDiezPorCiento() {
+        cliente.setPremium(true);
+        prepararPedidoBasico();
         when(cuponRepository.findByCodigoIgnoreCase("MIEL10"))
                 .thenReturn(Optional.of(new Cupon("MIEL10", 10, true)));
-        when(productoRepository.findById(10L)).thenReturn(Optional.of(producto));
-        when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocacion -> invocacion.getArgument(0));
 
         PedidoResponse respuesta = pedidoService.crear(
-                new PedidoRequest(1L, "MIEL10", List.of(new DetallePedidoRequest(10L, 2))), cliente);
+                pedido("MIEL10", new DetallePedidoRequest(10L, 2, null)), cliente);
 
-        // 20.000 - 10% premium (2.000) - 10% cupón (1.800) + envío (8.000)
+        // Subtotal 20.000: gana el 10% (premium y cupón valen lo mismo, no se suman).
         assertEquals(new BigDecimal("20000"), respuesta.subtotal());
-        assertEquals(new BigDecimal("3800"), respuesta.descuento());
-        assertEquals(new BigDecimal("8000"), respuesta.envio());
-        assertEquals(new BigDecimal("24200"), respuesta.total());
+        assertEquals(new BigDecimal("2000"), respuesta.descuento());
+        assertEquals(new BigDecimal("26000"), respuesta.total());
         assertEquals(3, producto.getStock());
+    }
+
+    @Test
+    void mayorDe50RecibeLaMitad() {
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(60));
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido(null, new DetallePedidoRequest(10L, 2, null)), cliente);
+
+        assertEquals(new BigDecimal("10000"), respuesta.descuento());
+        assertEquals(new BigDecimal("18000"), respuesta.total());
+    }
+
+    @Test
+    void felices50RecibeDiezPorCientoDePorVida() {
+        cliente.setCodigoPromocional("FELICES50");
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido(null, new DetallePedidoRequest(10L, 2, null)), cliente);
+
+        assertEquals(new BigDecimal("2000"), respuesta.descuento());
+        assertEquals(new BigDecimal("26000"), respuesta.total());
+    }
+
+    @Test
+    void combinacionAplicaSoloElMayorDescuento() {
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(60));
+        cliente.setCodigoPromocional("FELICES50");
+        prepararPedidoBasico();
+        when(cuponRepository.findByCodigoIgnoreCase("CANELA20"))
+                .thenReturn(Optional.of(new Cupon("CANELA20", 20, true)));
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido("CANELA20", new DetallePedidoRequest(10L, 2, null)), cliente);
+
+        // 50% gana al 20% del cupón; no se suman.
+        assertEquals(new BigDecimal("10000"), respuesta.descuento());
+        assertEquals(new BigDecimal("18000"), respuesta.total());
+    }
+
+    @Test
+    void cumpleanosDuocRegalaLaTortaMasBarata() {
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(20));
+        cliente.setCorreoInstitucional(true);
+        prepararPedidoBasico();
+
+        Producto tortaBarata = new Producto("Torta Circular de Vainilla", new BigDecimal("15000"), 3, "/img/placeholder.svg", categoria, true);
+        tortaBarata.setId(11L);
+        when(productoRepository.findById(11L)).thenReturn(Optional.of(tortaBarata));
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido(null,
+                        new DetallePedidoRequest(10L, 1, "Feliz cumpleaños"),
+                        new DetallePedidoRequest(11L, 1, null)),
+                cliente);
+
+        // Subtotal 25.000 y se regala la torta más barata (10.000); sin otros descuentos.
+        assertEquals(new BigDecimal("25000"), respuesta.subtotal());
+        assertEquals(new BigDecimal("10000"), respuesta.descuento());
+        assertEquals(new BigDecimal("23000"), respuesta.total());
+        assertEquals("Feliz cumpleaños", respuesta.detalles().get(0).mensaje());
+    }
+
+    @Test
+    void noRegalaLaTortaSiEsLoUnicoDelPedido() {
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(20));
+        cliente.setCorreoInstitucional(true);
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                pedido(null, new DetallePedidoRequest(10L, 1, null)), cliente);
+
+        // Una sola torta en el pedido: no hay nada más pagado, así que no se regala.
+        assertEquals(BigDecimal.ZERO, respuesta.descuento());
+        assertEquals(new BigDecimal("18000"), respuesta.total());
+    }
+
+    @Test
+    void creaPedidoDeMostradorSinDireccionNiTelefono() {
+        prepararPedidoBasico();
+
+        PedidoResponse respuesta = pedidoService.crear(
+                new PedidoRequest(1L, null, LocalDate.now(), null, "", true, List.of(
+                        new DetallePedidoRequest(10L, 1, null))),
+                cliente);
+
+        assertEquals(BigDecimal.ZERO, respuesta.envio());
+        assertEquals(new BigDecimal("10000"), respuesta.total());
+        assertEquals(null, respuesta.direccion());
+        assertEquals(null, respuesta.telefono());
+        assertTrue(respuesta.retiro());
+    }
+
+    @Test
+    void rechazaFechaDeEntregaPasada() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(estadoPedidoRepository.findByOrden(1)).thenReturn(Optional.of(recibido));
+
+        PedidoRequest request = new PedidoRequest(
+                1L, null, LocalDate.now().minusDays(1), "Av. Siempre Viva 123", "912345678",
+                false, List.of(new DetallePedidoRequest(10L, 1, null)));
+
+        assertThrows(DatosInvalidosException.class, () -> pedidoService.crear(request, cliente));
+        verify(pedidoRepository, never()).save(any(Pedido.class));
     }
 
     @Test
@@ -95,7 +203,7 @@ class PedidoServiceTest {
         when(productoRepository.findById(10L)).thenReturn(Optional.of(producto));
 
         assertThrows(ConflictoException.class, () -> pedidoService.crear(
-                new PedidoRequest(1L, null, List.of(new DetallePedidoRequest(10L, 2))), cliente));
+                pedido(null, new DetallePedidoRequest(10L, 2, null)), cliente));
 
         assertEquals(1, producto.getStock());
         verify(pedidoRepository, never()).save(any(Pedido.class));
@@ -114,5 +222,19 @@ class PedidoServiceTest {
 
         assertThrows(ConflictoException.class,
                 () -> pedidoService.cambiarEstado(5L, new CambioEstadoRequest("Entregado")));
+    }
+
+    // Mocks comunes para un pedido válido de una línea.
+    private void prepararPedidoBasico() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(estadoPedidoRepository.findByOrden(1)).thenReturn(Optional.of(recibido));
+        when(productoRepository.findById(10L)).thenReturn(Optional.of(producto));
+        when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocacion -> invocacion.getArgument(0));
+    }
+
+    private PedidoRequest pedido(String cupon, DetallePedidoRequest... detalles) {
+        return new PedidoRequest(
+                1L, cupon, LocalDate.now().plusDays(1), "Av. Siempre Viva 123", "912345678",
+                false, List.of(detalles));
     }
 }

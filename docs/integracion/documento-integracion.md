@@ -16,7 +16,7 @@ La aplicación permite:
 
 - Consultar el catálogo de productos sin iniciar sesión.
 - Registrarse e iniciar sesión con JWT.
-- Crear pedidos con descuento Premium, cupones y descuento de stock.
+- Crear pedidos con los descuentos del caso, cupones y descuento de stock.
 - Administrar productos, categorías, pedidos, usuarios y cupones según el rol.
 
 La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a Canela & Miel.
@@ -50,8 +50,8 @@ La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a C
 
 | Rol | Puede |
 |---|---|
-| Público (sin sesión) | Ver catálogo, registrarse, iniciar sesión, ver Swagger |
-| `CLIENTE` | Ver y crear **sus propios** pedidos, ver su perfil |
+| Público (sin sesión) | Ver catálogo, registrarse, iniciar sesión, validar un cupón, ver Swagger |
+| `CLIENTE` | Ver y crear **sus propios** pedidos, ver y editar su perfil |
 | `ADMIN` | Todo lo del cliente, más productos, categorías, usuarios, cupones y cambios de estado |
 
 ### 3.3 Respuesta del login
@@ -64,6 +64,13 @@ La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a C
     "id": 2,
     "nombre": "Cliente Demo",
     "correo": "cliente@canelaymiel.cl",
+    "fechaNacimiento": "1990-05-20",
+    "codigoPromocional": null,
+    "correoInstitucional": false,
+    "telefono": null,
+    "direccion": null,
+    "preferencias": [],
+    "avatar": null,
     "premium": true,
     "activo": true,
     "rol": "CLIENTE"
@@ -99,7 +106,7 @@ Todos los errores usan la misma estructura:
 {
   "fecha": "2026-11-22T12:00:00",
   "estado": 409,
-  "mensaje": "Stock insuficiente para Torta de Chocolate Clásica"
+  "mensaje": "Stock insuficiente para Torta Cuadrada de Chocolate"
 }
 ```
 
@@ -109,7 +116,7 @@ Todos los errores usan la misma estructura:
 
 | Método | Ruta | Descripción | Entrada | Respuestas | Acceso |
 |---|---|---|---|---|---|
-| POST | `/auth/registro` | Crea un usuario `CLIENTE` y devuelve tokens | `{ nombre, correo, password }` | 201, 400, 409 | Público |
+| POST | `/auth/registro` | Crea un usuario `CLIENTE` y devuelve tokens | `{ nombre, correo, password, fechaNacimiento, codigoPromocional? }` | 201, 400, 409 | Público |
 | POST | `/auth/login` | Valida correo y contraseña | `{ correo, password }` | 200, 401 | Público |
 | POST | `/auth/refresh` | Renueva el token de acceso | `{ refreshToken }` | 200, 401 | Público |
 | GET | `/auth/perfil` | Devuelve el usuario del token | — | 200, 401 | Autenticado |
@@ -120,17 +127,20 @@ Todos los errores usan la misma estructura:
 |---|---|---|---|---|---|
 | GET | `/productos` | Lista los productos | — | 200 | Público |
 | GET | `/productos/{id}` | Obtiene un producto | — | 200, 404 | Público |
-| POST | `/productos` | Crea un producto | `ProductoRequest` | 201, 400, 404 | `ADMIN` |
-| PUT | `/productos/{id}` | Actualiza un producto | `ProductoRequest` | 200, 400, 404 | `ADMIN` |
+| POST | `/productos` | Crea un producto | `ProductoRequest` | 201, 400, 404, 409 | `ADMIN` |
+| PUT | `/productos/{id}` | Actualiza un producto | `ProductoRequest` | 200, 400, 404, 409 | `ADMIN` |
 | DELETE | `/productos/{id}` | Elimina un producto | — | 204, 404, 409 | `ADMIN` |
 
 `ProductoRequest`:
 
 ```json
 {
-  "nombre": "Torta de Chocolate Clásica",
-  "precio": 35000,
-  "stock": 8,
+  "codigo": "TC001",
+  "nombre": "Torta Cuadrada de Chocolate",
+  "descripcion": "Deliciosa torta de chocolate con capas de ganache y un toque de avellanas.",
+  "precio": 45000,
+  "stock": 10,
+  "porciones": 20,
   "imagen": "/img/chocolate.jpg",
   "categoriaId": 1,
   "activo": true
@@ -163,11 +173,18 @@ Todos los errores usan la misma estructura:
 {
   "clienteId": 2,
   "cuponCodigo": "MIEL10",
+  "fechaEntrega": "2026-11-27",
+  "direccion": "Av. Siempre Viva 123",
+  "telefono": "912345678",
+  "retiro": false,
   "detalles": [
-    { "productoId": 1, "cantidad": 2 }
+    { "productoId": 1, "cantidad": 2, "mensaje": "Feliz cumpleaños" }
   ]
 }
 ```
+
+En los pedidos de **mostrador**, `direccion` y `telefono` pueden omitirse y `retiro` va en `true`;
+en ese caso el envío es **$0**. El checkout web sigue exigiendo dirección y teléfono.
 
 Respuesta `201`:
 
@@ -175,21 +192,26 @@ Respuesta `201`:
 {
   "id": 10,
   "fecha": "2026-11-22T12:00:00",
+  "fechaEntrega": "2026-11-27",
+  "direccion": "Av. Siempre Viva 123",
+  "telefono": "912345678",
+  "retiro": false,
   "cliente": "Cliente Demo",
   "correo": "cliente@canelaymiel.cl",
   "estado": "Recibido",
-  "subtotal": 70000,
-  "descuento": 13300,
+  "subtotal": 90000,
+  "descuento": 9000,
   "envio": 8000,
-  "total": 64700,
+  "total": 89000,
   "cuponCodigo": "MIEL10",
   "detalles": [
     {
       "productoId": 1,
-      "producto": "Torta de Chocolate Clásica",
+      "producto": "Torta Cuadrada de Chocolate",
       "cantidad": 2,
-      "precioUnitario": 35000,
-      "subtotal": 70000
+      "precioUnitario": 45000,
+      "subtotal": 90000,
+      "mensaje": "Feliz cumpleaños"
     }
   ]
 }
@@ -197,13 +219,13 @@ Respuesta `201`:
 
 Cálculo del ejemplo:
 
-1. Subtotal: `2 × 35.000 = 70.000`.
-2. Descuento Premium (10%): `7.000`.
-3. Saldo: `63.000`.
-4. Cupón `MIEL10` (10% sobre el saldo): `6.300`.
-5. Descuento total: `13.300`.
-6. Envío: `8.000`.
-7. **Total: 64.700**.
+1. Subtotal: `2 × 45.000 = 90.000`.
+2. Descuento: el cliente es Premium (10%) e ingresó `MIEL10` (10%). **Se aplica solo el mayor**: `9.000`.
+3. Envío: `8.000`.
+4. **Total: 89.000**.
+
+Si el cliente fuera mayor de 50, se aplicaría el 50% en vez del 10%. Si fuera estudiante Duoc y hoy fuera su cumpleaños,
+se restaría primero la torta más barata (solo si el pedido trae otro producto pagado) y luego el mayor descuento porcentual sobre el saldo.
 
 El `clienteId` solo puede ser el propio para un `CLIENTE`; si envía otro, responde **403**.
 
@@ -216,8 +238,26 @@ El `clienteId` solo puede ser el propio para un `CLIENTE`; si envía otro, respo
 | POST | `/usuarios` | Crea un usuario con rol | `UsuarioRequest` | 201, 400, 409 | `ADMIN` |
 | PUT | `/usuarios/{id}` | Actualiza datos o rol | `UsuarioRequest` | 200, 400, 404, 409 | `ADMIN` |
 | DELETE | `/usuarios/{id}` | Elimina un usuario | — | 204, 404, 409 | `ADMIN` |
+| GET | `/usuarios/me` | Perfil del usuario autenticado | — | 200, 401 | Autenticado |
+| PUT | `/usuarios/me` | Edita nombre, teléfono, dirección, preferencias y avatar | `PerfilRequest` | 200, 400, 401 | Autenticado |
+| PUT | `/usuarios/me/password` | Cambia la contraseña | `{ actual, nueva }` | 204, 400, 401 | Autenticado |
 
-La contraseña se envía solo al crear o al cambiarla. Si se omite en un `PUT`, se conserva la anterior. Nunca se devuelve en las respuestas.
+`PerfilRequest`:
+
+```json
+{
+  "nombre": "Ana Pérez",
+  "telefono": "912345678",
+  "direccion": "Av. Siempre Viva 123",
+  "preferencias": ["Tortas Cuadradas", "Productos Vegana"],
+  "avatar": "/img/avatares/avatar-2.svg"
+}
+```
+
+El avatar debe ser uno de los 6 disponibles en `/img/avatares/`; cualquier otra ruta responde **400**.
+La contraseña nunca se devuelve. El cambio de contraseña exige la actual y la compara con BCrypt.
+
+La contraseña se envía solo al crear o al cambiarla. Si se omite en un `PUT`, se conserva la anterior.
 
 ### 5.6 Cupones
 
@@ -228,6 +268,7 @@ La contraseña se envía solo al crear o al cambiarla. Si se omite en un `PUT`, 
 | POST | `/cupones` | Crea un cupón | `{ codigo, porcentaje, activo }` | 201, 400, 409 | `ADMIN` |
 | PUT | `/cupones/{id}` | Actualiza un cupón | `{ codigo, porcentaje, activo }` | 200, 400, 404, 409 | `ADMIN` |
 | DELETE | `/cupones/{id}` | Elimina un cupón | — | 204, 404, 409 | `ADMIN` |
+| GET | `/cupones/validar/{codigo}` | Devuelve el porcentaje de un cupón activo | — | 200, 400 | Público |
 
 Cupones de prueba: `MIEL10` (10%, activo) y `CANELA20` (20%, inactivo).
 
@@ -253,12 +294,13 @@ Los componentes nunca llaman a `fetch`. Todo pasa por `frontend/src/services/`:
 |---|---|
 | `api.js` | Única salida HTTP. Agrega el token, convierte JSON, renueva el token en un 401 y deriva los errores al manejador central. |
 | `errorHandler.js` | Traduce los códigos 400/403/404/409/500 a mensajes para el usuario. |
-| `sesion.js` | Guarda, lee y limpia la sesión en `localStorage`; avisa los cambios a React. |
+| `sesion.js` | Guarda, lee, actualiza y limpia la sesión en `localStorage`; avisa los cambios a React. |
 | `authService.js` | Registro, login, perfil y cierre de sesión. |
 | `productService.js` | Listar, crear, actualizar y eliminar productos. |
 | `categoriaService.js` | Listar categorías. |
 | `orderService.js` | Listar y crear pedidos; avanzar de estado. |
-| `userService.js` | Listar usuarios y cambiar el rol. |
+| `cuponService.js` | Validar un cupón por código (público). |
+| `userService.js` | Administrar usuarios, ver/editar el perfil propio y cambiar la contraseña. |
 
 ### 6.2 Flujo de una petición
 
@@ -284,31 +326,38 @@ Componente: setProductos(...) → React vuelve a dibujar
 
 ### 6.3 Capturas del frontend consumiendo la API
 
+> Las capturas se actualizan después de la última ronda de cambios del panel (mostrador y búsquedas).
+> La lista completa, con URL y usuario, está en [`docs/capturas.md`](../capturas.md).
+
 ![Inicio de sesión](img/01-inicio-sesion.jpeg)
 
 **Figura 1.** Formulario de inicio de sesión. Envía las credenciales a `POST /auth/login` y guarda los tokens en el navegador.
 
 ![Dashboard con datos reales](img/02-dashboard.jpeg)
 
-**Figura 2.** Dashboard del administrador. Los KPIs y el gráfico se calculan con pedidos, productos y usuarios obtenidos de la API.
+**Figura 2.** Dashboard del administrador. Los KPIs, el gráfico, los últimos pedidos y el stock bajo se calculan con datos reales de la API.
 
 ![Inventario](img/03-inventario.jpeg)
 
-**Figura 3.** Inventario. La tabla se llena con `GET /productos`; las acciones usan `POST`, `PUT` y `DELETE`.
+**Figura 3.** Inventario. La tabla se llena con `GET /productos`; permite buscar por nombre o código, filtrar stock bajo y usar `POST`, `PUT` y `DELETE`.
 
 ![Pedidos](img/04-pedidos.jpeg)
 
-**Figura 4.** Pedidos. Se listan con `GET /pedidos`, se filtran por estado y el botón de acción usa `PATCH /pedidos/{id}/estado`.
+**Figura 4.** Pedidos. Se listan con `GET /pedidos`, se buscan por cliente o número, muestran la entrega y el botón de acción usa `PATCH /pedidos/{id}/estado`.
 
 ![Usuarios](img/05-usuarios.jpeg)
 
-**Figura 5.** Usuarios. Se listan con `GET /usuarios` y el selector de rol ejecuta `PUT /usuarios/{id}`.
+**Figura 5.** Usuarios. Se listan con `GET /usuarios`, se buscan por nombre o correo y el selector de rol ejecuta `PUT /usuarios/{id}`.
 
 ![Swagger](img/06-swagger.jpeg)
 
 **Figura 6.** Swagger con el esquema Bearer y los endpoints documentados. El botón **Authorize** permite probar con el token de acceso.
 
-> Las capturas se tomaron con pedidos de demostración creados por la API. Al terminar la prueba se eliminaron y el stock volvió a su valor inicial.
+![Mostrador](img/07-mostrador.jpeg)
+
+**Figura 7.** Mostrador (POS). El administrador arma el pedido y lo envía con `POST /pedidos`; el retiro en el local no cobra envío.
+
+> Las capturas se tomaron con los pedidos de demostración **#3, #6 y #7**. En una base nueva, la semilla crea 14 pedidos de los últimos 7 días. Para repetir las capturas, crea pedidos nuevos y vuelve a capturar las figuras.
 
 ## 7. Verificación de entrega
 
@@ -328,7 +377,10 @@ Componente: setProductos(...) → React vuelve a dibujar
 
 - El **refresh token es stateless**: no existe lista de revocación ni endpoint de logout en el backend. Cerrar sesión borra los tokens del navegador.
 - El frontend guarda el token en `localStorage`. Una cookie `httpOnly` sería más resistente a XSS, pero complica la explicación y no es exigida por la rúbrica.
-- Los cupones se validan al crear el pedido; no hay endpoint público para "consultar cupón".
-- El pedido no guarda dirección de despacho: el alcance de la API se centra en productos, stock, descuentos y estados.
+- Los cupones se validan al crear el pedido y también con `GET /cupones/validar/{codigo}`, que es público y solo devuelve el porcentaje.
+- El pedido guarda fecha de entrega, dirección y teléfono; no hay cálculo de rutas ni geocodificación.
+- Los filtros y la búsqueda del catálogo se resuelven en el navegador sobre `GET /productos`; con un catálogo mucho más grande convendría moverlos a parámetros de consulta del backend.
+- El mapa usa un `iframe` público de OpenStreetMap con una **ubicación de demostración** (`src/config/tienda.js`); no hay geocodificación, API key ni cálculo de rutas. Si no hay internet, la dirección y el enlace de respaldo siguen visibles.
+- La boleta se imprime desde el navegador con `window.print()` y estilos `@media print`; no hay documento tributario real.
 - `spring.jpa.hibernate.ddl-auto=update` es cómodo para desarrollo; en producción se usarían migraciones.
 - El manual de usuario y el reporte de cobertura de pruebas corresponden a la otra integrante del equipo.

@@ -4,6 +4,7 @@ import { actualizarRol, listarUsuarios } from '../../services/userService'
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState(null)
   const [error, setError] = useState('')
+  const [busqueda, setBusqueda] = useState('')
 
   async function cargar() {
     setUsuarios(await listarUsuarios())
@@ -30,13 +31,33 @@ export default function Usuarios() {
   if (error) return <p className="text-danger">{error}</p>
   if (!usuarios) return <p>Cargando…</p>
 
+  const texto = busqueda.trim().toLowerCase()
+  const visibles = usuarios.filter(
+    (usuario) =>
+      !texto ||
+      usuario.nombre.toLowerCase().includes(texto) ||
+      usuario.correo.toLowerCase().includes(texto)
+  )
+
   return (
     <div>
       <h1 className="h3 mb-4">Usuarios</h1>
 
-      <div className="card border-0 shadow-sm">
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <input
+          type="search"
+          className="form-control"
+          style={{ maxWidth: '320px' }}
+          placeholder="Buscar por nombre o correo"
+          value={busqueda}
+          onChange={(evento) => setBusqueda(evento.target.value)}
+        />
+        <span className="small text-body-secondary">{visibles.length} usuarios</span>
+      </div>
+
+      <div className="card border-0 shadow-sm tarjeta-admin">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle table-hover mb-0">
             <thead>
               <tr>
                 <th scope="col">Nombre</th>
@@ -46,7 +67,7 @@ export default function Usuarios() {
               </tr>
             </thead>
             <tbody>
-              {usuarios.map((usuario) => (
+              {visibles.map((usuario) => (
                 <tr key={usuario.id}>
                   <td>{usuario.nombre}</td>
                   <td>{usuario.correo}</td>

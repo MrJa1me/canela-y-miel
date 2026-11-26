@@ -17,7 +17,7 @@ function leerCarritoGuardado() {
   }
 }
 
-export function CartProvider({ children, esPremium = false }) {
+export function CartProvider({ children, beneficios }) {
   // items = lista de productos en el carrito, cada uno con su cantidad
   const [items, setItems] = useState(leerCarritoGuardado);
 
@@ -26,18 +26,23 @@ export function CartProvider({ children, esPremium = false }) {
     localStorage.setItem(CLAVE_CARRITO, JSON.stringify(items));
   }, [items]);
 
-  // Agrega un producto; si ya estaba, solo le suma cantidad
-  function agregar(producto, cantidad = 1) {
+  // Agrega un producto; si ya estaba, solo le suma cantidad.
+  // El mensaje de personalización se reemplaza si viene uno nuevo.
+  function agregar(producto, cantidad = 1, mensaje = null) {
     setItems((actual) => {
       const existe = actual.find((item) => item.id === producto.id);
       if (existe) {
         return actual.map((item) =>
           item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + cantidad }
+            ? {
+                ...item,
+                cantidad: item.cantidad + cantidad,
+                mensaje: mensaje ?? item.mensaje,
+              }
             : item
         );
       }
-      return [...actual, { ...producto, cantidad }];
+      return [...actual, { ...producto, cantidad, mensaje }];
     });
   }
 
@@ -63,7 +68,7 @@ export function CartProvider({ children, esPremium = false }) {
   }
 
   // Subtotal, envío, descuento y total salen de una función simple
-  const { subtotal, envio, descuento, total } = calcularTotales(items, esPremium);
+  const { subtotal, envio, descuento, total } = calcularTotales(items, beneficios);
 
   const valor = {
     items,

@@ -50,7 +50,10 @@ public class ProductosController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Producto creado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "409", description = "El código ya está en uso")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -62,7 +65,10 @@ public class ProductosController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Producto actualizado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Producto o categoría no encontrada")
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Producto o categoría no encontrada"),
+            @ApiResponse(responseCode = "409", description = "El código ya está en uso")
     })
     @PutMapping("/{id}")
     public ProductoResponse actualizar(@PathVariable Long id, @Valid @RequestBody ProductoRequest request) {
@@ -72,6 +78,8 @@ public class ProductosController {
     @Operation(summary = "Eliminar un producto")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Producto eliminado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Producto no encontrado"),
             @ApiResponse(responseCode = "409", description = "El producto tiene pedidos asociados")
     })

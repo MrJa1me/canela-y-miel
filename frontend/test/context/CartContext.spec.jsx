@@ -2,7 +2,7 @@ import { act } from "react";
 import { dibujar } from "../components/ayudas";
 import { CartProvider, useCart } from "../../src/context/CartContext";
 
-const torta = { id: 1, nombre: "Torta de Chocolate Clásica", precio: 35000 };
+const torta = { id: 1, nombre: "Torta Cuadrada de Chocolate", precio: 45000 };
 
 // Componente de prueba: guarda el carrito en una variable para poder usarlo
 let carrito;
@@ -49,5 +49,13 @@ describe("CartContext", () => {
 
     expect(carrito.items.length).toBe(0);
     expect(carrito.envio).toBe(0);
+  });
+
+  it("guarda el mensaje de personalización y lo conserva al sumar cantidad", () => {
+    act(() => carrito.agregar(torta, 1, "Feliz cumple"));
+    expect(carrito.items[0].mensaje).toBe("Feliz cumple");
+
+    act(() => carrito.agregar(torta, 1));
+    expect(carrito.items[0].mensaje).toBe("Feliz cumple");
   });
 });

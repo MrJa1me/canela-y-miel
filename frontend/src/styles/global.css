@@ -8,11 +8,163 @@ body {
 
 h1,
 h2,
-h3,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* La marca usa la fuente de títulos para mantener la identidad. */
+.navbar-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
 h4,
 h5,
 h6 {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+/* ============================================================
+   FONDOS DE TARJETAS
+   Para cambiar el fondo de una tarjeta, edita el background-color
+   de la clase que corresponda. Usa solo colores de variables.css.
+   ============================================================ */
+
+/* Catálogo, Home (favoritos) y productos relacionados */
+.tarjeta-producto {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: cuadrícula de categorías */
+.tarjeta-categoria {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: beneficios y promociones */
+.tarjeta-beneficio {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: blog y recetas */
+.tarjeta-blog {
+  background-color: var(--color-tarjeta);
+}
+
+/* Carrito, Checkout y Confirmación: resumen del pedido */
+.tarjeta-resumen {
+  background-color: var(--color-tarjeta);
+}
+
+/* Perfil: datos, preferencias, beneficios y contraseña */
+.tarjeta-perfil {
+  background-color: var(--color-tarjeta);
+}
+
+/* Panel de administración */
+.tarjeta-admin {
+  background-color: var(--color-tarjeta);
+}
+
+/* Menús desplegables de la barra */
+.navbar-canela .dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--color-primary-soft);
+  --bs-dropdown-link-active-color: var(--color-secondary);
+  border: 0;
+  box-shadow: 0 0.5rem 1rem var(--color-shadow);
+}
+
+.mini-carrito-menu {
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+}
+
+/* Controles del carrusel: círculo chocolate para que se vean sobre las fotos */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+  padding: 1rem;
+  background-size: 50%;
+}
+
+.carrusel-productos .carousel-indicators button {
+  background-color: var(--color-secondary);
+  opacity: 0.35;
+}
+
+.carrusel-productos .carousel-indicators .active {
+  opacity: 1;
+}
+
+/* Las tarjetas dentro de un panel del perfil se integran con él. */
+.panel-desplegable .card {
+  border: 0;
+  background: transparent;
+}
+
+.panel-desplegable .card-body {
+  padding: 0;
+}
+
+/* El título del panel ya nombra la sección: se oculta el de la tarjeta interna. */
+.panel-desplegable .card h2 {
+  display: none;
+}
+
+/* Todas las tarjetas con imagen usan el mismo alto (no salta el diseño). */
+.imagen-tarjeta {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* Mapa embebido de OpenStreetMap */
+.mapa-tienda {
+  width: 100%;
+  height: 280px;
+  border: 0;
+  display: block;
+}
+
+/* Al imprimir la boleta, se oculta el resto de la página. */
+@media print {
+  .navbar,
+  .footer-canela,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .boleta,
+  .boleta * {
+    visibility: visible;
+  }
+
+  .boleta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 0 !important;
+  }
+}
+
+/* Dos líneas reservadas para el nombre: todas las tarjetas miden lo mismo. */
+.tarjeta-producto h2 {
+  min-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .navbar-canela {
@@ -42,6 +194,21 @@ h6 {
 .nav-link.active {
   color: var(--color-secondary);
   font-weight: 600;
+}
+
+/* Enlaces del NavBar: el fondo es oscuro, así que el texto va en claro. */
+.navbar-canela .navbar-brand,
+.navbar-canela .nav-link {
+  color: var(--color-neutral);
+}
+
+.navbar-canela .nav-link:hover,
+.navbar-canela .nav-link:focus {
+  color: var(--color-primary-soft);
+}
+
+.navbar-canela .nav-link.active {
+  color: var(--color-primary);
 }
 
 /* Contenedor del gráfico de barras del dashboard. */

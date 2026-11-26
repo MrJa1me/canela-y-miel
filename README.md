@@ -9,7 +9,21 @@ Incluye frontend en React, backend en Spring Boot y base de datos MySQL en Docke
 - Node.js 20 o superior
 - Docker Desktop encendido
 
-## Puesta en marcha (en este orden)
+## Inicio rápido (Windows)
+
+Doble clic en **`iniciar.cmd`** (o ejecuta `.\iniciar.ps1`). El script:
+
+1. Crea `.env` si no existe.
+2. Levanta MySQL y espera a que esté `healthy`.
+3. Instala las dependencias del frontend si faltan.
+4. Inicia el backend y el frontend en ventanas separadas.
+5. Abre `http://localhost:5173` en el navegador.
+
+Para detener todo usa **`detener.cmd`** (o `.\detener.ps1`): no borra los datos.
+
+La primera vez puede tardar más porque Maven y npm descargan dependencias.
+
+## Puesta en marcha manual (en este orden)
 
 ### 1. Variables de entorno
 
@@ -19,7 +33,25 @@ En la raíz del proyecto:
 Copy-Item .env.example .env
 ```
 
-Abre `.env` y cambia las claves si quieres. El archivo `.env` nunca se sube a Git.
+Abre `.env` y cambia las claves si quieres. El backend **lee ese mismo `.env`** al arrancar
+(`spring.config.import=optional:file:../.env[.properties]` en `application.properties`), así que no hay
+que duplicar valores ni configurar variables en Windows. El archivo `.env` nunca se sube a Git.
+
+`MYSQL_PASSWORD` (la usa el contenedor) y `DB_PASSWORD` (la usa el backend) **deben tener el mismo valor**.
+
+| Variable | Para qué sirve | Valor por defecto |
+|---|---|---|
+| `MYSQL_ROOT_PASSWORD` | Clave de root de MySQL en Docker | Ninguno, la eliges |
+| `MYSQL_DATABASE` | Nombre de la base que crea Docker | `canela_miel` |
+| `MYSQL_USER` | Usuario que crea Docker | `canela` |
+| `MYSQL_PASSWORD` | Clave de ese usuario en MySQL | Ninguno, la eliges |
+| `DB_URL` | URL JDBC que usa el backend | `jdbc:mysql://localhost:3306/canela_miel?...` |
+| `DB_USER` | Usuario del backend | `canela` |
+| `DB_PASSWORD` | Clave del backend (igual a `MYSQL_PASSWORD`) | Ninguno, la eliges |
+| `JWT_SECRET` | Firma de los tokens (mínimo 32 caracteres) | Ninguno, es obligatoria |
+| `SERVER_PORT` | Puerto del backend | `8080` |
+| `JWT_ACCESS_MINUTOS` | Duración del token de acceso | `15` |
+| `JWT_REFRESH_DIAS` | Duración del refresh token | `7` |
 
 ### 2. Base de datos
 
@@ -34,9 +66,9 @@ Debes ver `canela-mysql` como `healthy` y `canela-adminer` arriba.
 - Adminer (interfaz web): <http://localhost:8081>
   - Sistema: `MySQL`
   - Servidor: `mysql`
-  - Usuario: `canela`
-  - Contraseña: `canela123`
-  - Base de datos: `canela_miel`
+  - Usuario: `MYSQL_USER` (por defecto `canela`)
+  - Contraseña: `MYSQL_PASSWORD` (por defecto `cambia_esta_clave`)
+  - Base de datos: `MYSQL_DATABASE` (por defecto `canela_miel`)
 
 > `docker compose down -v` **borra el volumen y todos los datos**. Usa `docker compose down` para apagar sin perder nada.
 
@@ -49,6 +81,8 @@ cd backend
 
 - API: <http://localhost:8080>
 - Swagger: <http://localhost:8080/swagger-ui.html>
+
+> El backend lee el `.env` de la raíz. Si falta, no arranca y muestra `Could not resolve placeholder 'DB_PASSWORD'`: vuelve al paso 1.
 
 ### 4. Frontend
 
@@ -66,14 +100,20 @@ npm.cmd run dev
 
 ## Usuarios de prueba
 
-Se crean al arrancar el backend (Fase 2).
+Se crean al arrancar el backend con la base vacía.
 
 | Rol | Correo | Contraseña | Nota |
 |---|---|---|---|
-| ADMIN | admin@canelaymiel.cl | Admin1234 | Acceso al panel |
+| ADMIN | admin@canelaymiel.cl | Admin1234 | Acceso al panel y al mostrador |
 | CLIENTE | cliente@canelaymiel.cl | Cliente1234 | Premium: 10% de descuento |
+| CLIENTE | maria@duoc.cl | Cliente1234 | FELICES50 y correo institucional |
+| CLIENTE | pedro@correo.cl | Cliente1234 | Mayor de 50: 50% de descuento |
+| CLIENTE | mostrador@canelaymiel.cl | Cliente1234 | Cliente para pedidos del local |
 
 Cupón de prueba: `MIEL10` (10%, activo). `CANELA20` existe, pero está inactivo.
+
+**Datos de demostración:** en una base nueva se crean **14 pedidos de los últimos 7 días** para que el
+dashboard y el panel de pedidos no aparezcan vacíos. Si la base ya tiene pedidos, no se duplican.
 
 ## API
 
@@ -85,20 +125,33 @@ Base: `http://localhost:8080/api/v1` · Documentación: <http://localhost:8080/s
 | Productos | `GET/POST /productos` · `GET/PUT/DELETE /productos/{id}` |
 | Categorías | `GET/POST /categorias` · `GET/PUT/DELETE /categorias/{id}` |
 | Pedidos | `GET/POST /pedidos` · `GET/DELETE /pedidos/{id}` · `PATCH /pedidos/{id}/estado` |
-| Usuarios | `GET/POST /usuarios` · `GET/PUT/DELETE /usuarios/{id}` |
-| Cupones | `GET/POST /cupones` · `GET/PUT/DELETE /cupones/{id}` |
+| Usuarios | `GET/POST /usuarios` · `GET/PUT/DELETE /usuarios/{id}` · `GET/PUT /usuarios/me` · `PUT /usuarios/me/password` |
+| Cupones | `GET/POST /cupones` · `GET/PUT/DELETE /cupones/{id}` · `GET /cupones/validar/{codigo}` (público) |
 
-Reglas de negocio de un pedido: subtotal → 10% Premium → cupón sobre el saldo → envío de $8.000.
+Reglas de negocio de un pedido: subtotal → torta gratis de cumpleaños Duoc (si aplica) → **solo el mayor**
+descuento (50% mayor de 50, 10% FELICES50/Premium, cupón) → envío de $8.000.
+
+El registro pide **fecha de nacimiento** (obligatoria) y un **código promocional** opcional (`FELICES50`).
+Los correos `@duoc.cl`, `@duocuc.cl` y `@profesor.duoc.cl` reciben la torta más barata gratis el día de su
+cumpleaños, **solo si el pedido trae otro producto pagado** (una torta sola no activa el beneficio).
+El pedido guarda fecha de entrega, dirección, teléfono y el mensaje de personalización de las tortas.
+
 El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanzan de a uno.
 
 ### Acceso y roles
 
-- **Público:** catálogo (`GET /productos`, `GET /categorias`), registro, login, refresh y Swagger.
-- **CLIENTE:** crea pedidos para su propia cuenta y ve solo los suyos.
+- **Público:** catálogo (`GET /productos`, `GET /categorias`), registro, login, refresh, validar cupón y Swagger.
+- **CLIENTE:** crea pedidos para su propia cuenta, ve solo los suyos y edita su perfil (datos, preferencias, avatar y contraseña).
 - **ADMIN:** crea/edita/elimina productos y categorías, administra usuarios y cupones, y cambia estados.
 - El token de acceso dura **15 minutos** y el refresh **7 días**. Van en `Authorization: Bearer <token>`.
 - La clave para firmar los tokens está en `JWT_SECRET` (`.env`).
 - En Swagger: ejecuta `POST /auth/login`, copia el `token` y pégalo en **Authorize**.
+
+### Mostrador (POS)
+
+En `/admin/mostrador` el administrador puede crear un pedido para un cliente sin pasar por el carrito:
+busca productos, ajusta cantidades, elige cliente y entrega (retiro en el local o despacho), fecha y cupón.
+El retiro en el local **no cobra envío**; el backend recalcula precios, descuentos y stock.
 
 ### Sesión en el frontend
 
@@ -112,13 +165,14 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 
 - [Documento de integración](docs/integracion/documento-integracion.md)
 - [ERS final](docs/ers/ERS-Canela-y-Miel.md)
-- Manual de usuario y reporte de cobertura: pendientes (los prepara la otra integrante).
+- [Manual de usuario](docs/Manual-de-usuario-Canela-y-Miel.docx) (capturas por actualizar)
+- Reporte de cobertura de testing: pendiente (lo prepara la otra integrante).
 
 ## Estructura
 
 ```
 canela-y-miel/
-├─ base/                  Referencia del curso (no se edita ni se entrega)
+├─ base/                  Referencia del curso (en .gitignore: no se versiona ni se entrega)
 ├─ backend/               Spring Boot 3 + Java 17 + Maven
 ├─ frontend/              React 18 + Vite + React Router + Bootstrap 5
 ├─ docs/                  Documentos de la entrega (Fase 5)

@@ -24,8 +24,15 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Código del catálogo del caso (TC001, PI002...). Los productos antiguos quedan sin código.
+    @Column(unique = true, length = 10)
+    private String codigo;
+
     @Column(nullable = false, length = 120)
     private String nombre;
+
+    @Column(length = 500)
+    private String descripcion;
 
     // Precio en pesos: sin decimales.
     @Column(nullable = false, precision = 10, scale = 0)
@@ -33,6 +40,9 @@ public class Producto {
 
     @Column(nullable = false)
     private Integer stock;
+
+    // Porciones aproximadas. Dato de demostración: el caso no entrega tamaños.
+    private Integer porciones;
 
     @Column(nullable = false, length = 200)
     private String imagen;
