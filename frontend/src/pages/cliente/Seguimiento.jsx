@@ -19,7 +19,7 @@ export default function Seguimiento() {
         const lista = await listarPedidos();
         setPedidos([...lista].sort((a, b) => b.id - a.id));
       } catch {
-        setError("No pudimos cargar tus pedidos. Intenta más tarde.");
+        setError("Ocurrió un error al cargar tus pedidos. Intenta nuevamente.");
       } finally {
         setCargando(false);
       }

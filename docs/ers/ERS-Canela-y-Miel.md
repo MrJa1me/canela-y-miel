@@ -115,6 +115,7 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños, solo si hay otro producto pagado | Cliente Duoc | Alta |
 | RF-22 | Perfil propio | Ver y editar nombre, teléfono, dirección, preferencias y avatar; cambiar la contraseña con la actual; solo el dueño de la cuenta | Cliente / Admin | Alta |
 | RF-23 | Compartir producto | Copiar el enlace del producto o compartirlo por WhatsApp desde su detalle | Visitante | Media |
+| RF-24 | Blog y recetas | Mostrar 3 tarjetas estáticas de recetas y consejos en el Home (contenido de demostración) | Visitante | Baja |
 
 ## 4. Requisitos no funcionales
 

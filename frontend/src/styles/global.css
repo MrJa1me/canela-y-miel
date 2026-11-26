@@ -8,11 +8,32 @@ body {
 
 h1,
 h2,
-h3,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
 h4,
 h5,
 h6 {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+/* Todas las tarjetas con imagen usan el mismo alto (no salta el diseño). */
+.imagen-tarjeta {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* Dos líneas reservadas para el nombre: todas las tarjetas miden lo mismo. */
+.tarjeta-producto h2 {
+  min-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .navbar-canela {

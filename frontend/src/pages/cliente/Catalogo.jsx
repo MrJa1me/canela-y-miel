@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { listarProductos } from "../../services/productService";
 import { listarCategorias } from "../../services/categoriaService";
 import { useCart } from "../../context/CartContext";
@@ -10,6 +11,7 @@ import SkeletonCatalogo from "../../components/SkeletonCatalogo";
 // Página del catálogo: lista de productos con filtros
 export default function Catalogo() {
   const { agregar } = useCart();
+  const [parametros] = useSearchParams();
 
   // Datos que llegan del backend
   const [productos, setProductos] = useState([]);
@@ -17,8 +19,8 @@ export default function Catalogo() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
-  // Filtros elegidos por el cliente
-  const [categoria, setCategoria] = useState("");
+  // Filtros elegidos por el cliente (la categoría puede venir desde el Home)
+  const [categoria, setCategoria] = useState(parametros.get("categoria") ?? "");
   const [precioMax, setPrecioMax] = useState(60000);
   const [porcionesMax, setPorcionesMax] = useState("");
   const [busqueda, setBusqueda] = useState("");
@@ -34,7 +36,7 @@ export default function Catalogo() {
       // De cada categoría guardamos solo el nombre
       setCategorias(listaCategorias.map((c) => c.nombre));
     } catch {
-      setError("No pudimos cargar los productos. Revisa que el backend esté encendido.");
+      setError("Ocurrió un error al cargar los productos. Intenta nuevamente en unos minutos.");
     } finally {
       setCargando(false);
     }

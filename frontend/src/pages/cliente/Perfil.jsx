@@ -52,7 +52,7 @@ export default function Perfil() {
         const lista = await listarCategorias();
         setCategorias(lista.map((c) => c.nombre));
       } catch {
-        setError("No pudimos cargar tu información. Intenta más tarde.");
+        setError("Ocurrió un error al cargar tu información. Intenta nuevamente.");
       }
     }
     cargar();

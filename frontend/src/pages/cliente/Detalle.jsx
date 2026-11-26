@@ -42,7 +42,7 @@ export default function Detalle() {
           : []
       );
     } catch {
-      setError("No pudimos cargar el producto. Revisa que el backend esté encendido.");
+      setError("Ocurrió un error al cargar el producto. Intenta nuevamente en unos minutos.");
     } finally {
       setCargando(false);
     }

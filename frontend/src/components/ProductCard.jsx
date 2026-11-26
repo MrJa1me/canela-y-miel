@@ -4,11 +4,12 @@ import { formatPrice } from "../utils/formatPrice";
 // Tarjeta de un producto: imagen, nombre, categoría, precio y botones
 function ProductCard({ producto, onAgregar }) {
   return (
-    <div className="card h-100">
+    <div className="card h-100 tarjeta-hover tarjeta-producto">
       <img
         src={producto.imagen}
-        className="card-img-top"
+        className="card-img-top imagen-tarjeta"
         alt={producto.nombre}
+        loading="lazy"
       />
       <div className="card-body d-flex flex-column">
         <small className="text-secondary">

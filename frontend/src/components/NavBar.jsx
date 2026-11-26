@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import Avatar from './Avatar'
 
 // Devuelve la clase de Bootstrap para marcar el enlace activo.
@@ -11,7 +12,10 @@ const claseEnlacePerfil = ({ isActive }) =>
 
 export default function NavBar() {
   const { usuario, cerrarSesion } = useAuth()
+  const { items } = useCart()
   const navegar = useNavigate()
+
+  const unidades = items.reduce((total, item) => total + item.cantidad, 0)
 
   function salir() {
     cerrarSesion()
@@ -52,6 +56,15 @@ export default function NavBar() {
             <li className="nav-item">
               <NavLink className={claseEnlace} to="/carrito">
                 Carrito
+                {unidades > 0 && (
+                  <span
+                    key={unidades}
+                    className="badge rounded-pill contador-carrito ms-1"
+                    aria-label={`${unidades} productos en el carrito`}
+                  >
+                    {unidades}
+                  </span>
+                )}
               </NavLink>
             </li>
 
