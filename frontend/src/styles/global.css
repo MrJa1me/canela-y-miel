@@ -44,6 +44,21 @@ h6 {
   font-weight: 600;
 }
 
+/* Enlaces del NavBar: el fondo es oscuro, así que el texto va en claro. */
+.navbar-canela .navbar-brand,
+.navbar-canela .nav-link {
+  color: var(--color-neutral);
+}
+
+.navbar-canela .nav-link:hover,
+.navbar-canela .nav-link:focus {
+  color: var(--color-primary-soft);
+}
+
+.navbar-canela .nav-link.active {
+  color: var(--color-primary);
+}
+
 /* Contenedor del gráfico de barras del dashboard. */
 .grafico {
   height: 220px;
