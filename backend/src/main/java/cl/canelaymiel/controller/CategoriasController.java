@@ -50,6 +50,8 @@ public class CategoriasController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Categoría creada"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "409", description = "El nombre ya existe")
     })
     @PostMapping
@@ -62,6 +64,8 @@ public class CategoriasController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Categoría actualizada"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
             @ApiResponse(responseCode = "409", description = "El nombre ya existe")
     })
@@ -73,6 +77,8 @@ public class CategoriasController {
     @Operation(summary = "Eliminar una categoría")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Categoría eliminada"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
             @ApiResponse(responseCode = "409", description = "La categoría tiene productos asociados")
     })

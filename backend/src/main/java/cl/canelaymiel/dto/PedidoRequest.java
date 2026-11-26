@@ -1,5 +1,6 @@
 package cl.canelaymiel.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -11,15 +12,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record PedidoRequest(
-        @NotNull(message = "El cliente es obligatorio") Long clienteId,
+        @NotNull(message = "El cliente es obligatorio")
+        @Schema(example = "2") Long clienteId,
         // Opcional: si viene, se valida y compite como descuento.
+        @Schema(example = "MIEL10", description = "Opcional; se aplica solo si es el mayor descuento")
         String cuponCodigo,
         @NotNull(message = "La fecha de entrega es obligatoria")
-        @FutureOrPresent(message = "La fecha de entrega no puede ser pasada") LocalDate fechaEntrega,
+        @FutureOrPresent(message = "La fecha de entrega no puede ser pasada")
+        @Schema(example = "2026-12-01") LocalDate fechaEntrega,
         @NotBlank(message = "La dirección es obligatoria")
-        @Size(min = 5, max = 200, message = "Escribe la dirección completa") String direccion,
+        @Size(min = 5, max = 200, message = "Escribe la dirección completa")
+        @Schema(example = "Av. Siempre Viva 123") String direccion,
         @NotBlank(message = "El teléfono es obligatorio")
-        @Pattern(regexp = "^9\\d{8}$", message = "El teléfono debe tener 9 dígitos y empezar con 9") String telefono,
+        @Pattern(regexp = "^9\\d{8}$", message = "El teléfono debe tener 9 dígitos y empezar con 9")
+        @Schema(example = "912345678") String telefono,
         @NotEmpty(message = "El pedido debe tener al menos un producto")
         @Valid List<DetallePedidoRequest> detalles) {
 }

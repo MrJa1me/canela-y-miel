@@ -30,7 +30,11 @@ public class UsuariosController {
     private final UsuarioService usuarioService;
 
     @Operation(summary = "Listar usuarios")
-    @ApiResponse(responseCode = "200", description = "Lista de usuarios")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN")
+    })
     @GetMapping
     public List<UsuarioResponse> listar() {
         return usuarioService.listar();
@@ -39,6 +43,8 @@ public class UsuariosController {
     @Operation(summary = "Obtener un usuario por su id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/{id}")
@@ -50,6 +56,8 @@ public class UsuariosController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Usuario creado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o rol inexistente"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "409", description = "El correo ya está registrado")
     })
     @PostMapping
@@ -62,6 +70,8 @@ public class UsuariosController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuario actualizado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o rol inexistente"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
             @ApiResponse(responseCode = "409", description = "El correo ya está registrado")
     })
@@ -73,6 +83,8 @@ public class UsuariosController {
     @Operation(summary = "Eliminar un usuario")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Usuario eliminado"),
+            @ApiResponse(responseCode = "401", description = "Sin sesión"),
+            @ApiResponse(responseCode = "403", description = "Requiere rol ADMIN"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
             @ApiResponse(responseCode = "409", description = "El usuario tiene pedidos asociados")
     })

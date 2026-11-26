@@ -45,6 +45,7 @@ public class AuthController {
     @Operation(summary = "Iniciar sesión", description = "Valida correo y contraseña con BCrypt.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Sesión iniciada"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "401", description = "Correo o contraseña incorrectos")
     })
     @PostMapping("/login")
@@ -55,6 +56,7 @@ public class AuthController {
     @Operation(summary = "Renovar el token de acceso", description = "Recibe el refresh token y entrega tokens nuevos.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Token renovado"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "401", description = "Refresh token inválido o vencido")
     })
     @PostMapping("/refresh")
