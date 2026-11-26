@@ -5,15 +5,16 @@ import "./Carrusel.css";
 // Carrusel de imágenes con título y texto (usa el carrusel de Bootstrap)
 function Carrusel({ id, diapositivas }) {
   const referencia = useRef(null);
+  const instancia = useRef(null);
 
   // Al aparecer en pantalla, activa el cambio automático cada 4 segundos
   useEffect(() => {
-    const instancia = new Carousel(referencia.current, {
+    instancia.current = new Carousel(referencia.current, {
       ride: "carousel",
       interval: 4000,
     });
     // Al salir de la página, lo apaga para no dejar nada corriendo
-    return () => instancia.dispose();
+    return () => instancia.current?.dispose();
   }, []);
 
   return (
@@ -40,8 +41,7 @@ function Carrusel({ id, diapositivas }) {
       <button
         className="carousel-control-prev"
         type="button"
-        data-bs-target={`#${id}`}
-        data-bs-slide="prev"
+        onClick={() => instancia.current?.prev()}
         aria-label="Anterior"
       >
         <span className="carousel-control-prev-icon" aria-hidden="true" />
@@ -49,8 +49,7 @@ function Carrusel({ id, diapositivas }) {
       <button
         className="carousel-control-next"
         type="button"
-        data-bs-target={`#${id}`}
-        data-bs-slide="next"
+        onClick={() => instancia.current?.next()}
         aria-label="Siguiente"
       >
         <span className="carousel-control-next-icon" aria-hidden="true" />

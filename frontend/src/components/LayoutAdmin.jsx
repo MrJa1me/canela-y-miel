@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Desplegable from './Desplegable'
 
 const SECCIONES = [
   { ruta: '/admin', nombre: 'Dashboard' },
@@ -31,28 +32,20 @@ export default function LayoutAdmin() {
               Canela &amp; Miel · Administración
             </Link>
 
-            <div className="dropdown">
-              <button
-                className="btn btn-sm btn-outline-light dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Menú · {actual}
-              </button>
-              <ul className="dropdown-menu">
-                {SECCIONES.map((seccion) => (
-                  <li key={seccion.ruta}>
-                    <Link
-                      className={`dropdown-item ${seccion.ruta === ubicacion.pathname ? 'active' : ''}`}
-                      to={seccion.ruta}
-                    >
-                      {seccion.nombre}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <Desplegable
+              claseBoton="btn btn-sm btn-outline-light"
+              boton={`Menú · ${actual}`}
+            >
+              {SECCIONES.map((seccion) => (
+                <Link
+                  key={seccion.ruta}
+                  className={`dropdown-item ${seccion.ruta === ubicacion.pathname ? 'active' : ''}`}
+                  to={seccion.ruta}
+                >
+                  {seccion.nombre}
+                </Link>
+              ))}
+            </Desplegable>
           </div>
 
           <div className="d-flex align-items-center gap-2">

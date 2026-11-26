@@ -67,6 +67,37 @@ h6 {
   background-color: var(--color-tarjeta);
 }
 
+/* Menús desplegables de la barra */
+.navbar-canela .dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--color-primary-soft);
+  --bs-dropdown-link-active-color: var(--color-secondary);
+  border: 0;
+  box-shadow: 0 0.5rem 1rem var(--color-shadow);
+}
+
+.mini-carrito-menu {
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+}
+
+/* Controles del carrusel: círculo chocolate para que se vean sobre las fotos */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+  padding: 1rem;
+  background-size: 50%;
+}
+
+.carrusel-productos .carousel-indicators button {
+  background-color: var(--color-secondary);
+  opacity: 0.35;
+}
+
+.carrusel-productos .carousel-indicators .active {
+  opacity: 1;
+}
+
 /* Las tarjetas dentro de un panel del perfil se integran con él. */
 .panel-desplegable .card {
   border: 0;

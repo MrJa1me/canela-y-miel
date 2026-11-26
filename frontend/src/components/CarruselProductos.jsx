@@ -6,24 +6,25 @@ import ProductCard from "./ProductCard";
 // Carrusel de tarjetas de producto con el carrusel de Bootstrap.
 function CarruselProductos({ id, productos, onAgregar }) {
   const referencia = useRef(null);
+  const instancia = useRef(null);
   const filas = agruparEnFilas(productos);
 
   useEffect(() => {
     // Con una sola diapositiva no hay nada que mover.
     if (!referencia.current || filas.length < 2) return;
 
-    const instancia = new Carousel(referencia.current, {
+    instancia.current = new Carousel(referencia.current, {
       ride: "carousel",
       interval: 5500,
       pause: "hover",
     });
-    return () => instancia.dispose();
+    return () => instancia.current?.dispose();
   }, [filas.length]);
 
   if (productos.length === 0) return null;
 
   return (
-    <div id={id} ref={referencia} className="carousel slide mb-4">
+    <div id={id} ref={referencia} className="carousel slide carrusel-productos mb-4">
       <div className="carousel-inner">
         {filas.map((fila, indice) => (
           <div key={indice} className={indice === 0 ? "carousel-item active" : "carousel-item"}>
@@ -48,8 +49,7 @@ function CarruselProductos({ id, productos, onAgregar }) {
               <button
                 key={indice}
                 type="button"
-                data-bs-target={`#${id}`}
-                data-bs-slide-to={indice}
+                onClick={() => instancia.current?.to(indice)}
                 className={indice === 0 ? "active" : ""}
                 aria-label={`Grupo ${indice + 1}`}
               />
@@ -59,8 +59,7 @@ function CarruselProductos({ id, productos, onAgregar }) {
           <button
             className="carousel-control-prev"
             type="button"
-            data-bs-target={`#${id}`}
-            data-bs-slide="prev"
+            onClick={() => instancia.current?.prev()}
             aria-label="Anterior"
           >
             <span className="carousel-control-prev-icon" aria-hidden="true" />
@@ -68,8 +67,7 @@ function CarruselProductos({ id, productos, onAgregar }) {
           <button
             className="carousel-control-next"
             type="button"
-            data-bs-target={`#${id}`}
-            data-bs-slide="next"
+            onClick={() => instancia.current?.next()}
             aria-label="Siguiente"
           >
             <span className="carousel-control-next-icon" aria-hidden="true" />
