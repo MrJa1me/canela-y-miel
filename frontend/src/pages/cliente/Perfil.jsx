@@ -11,6 +11,7 @@ import PerfilDatos from "../../components/PerfilDatos";
 import Preferencias from "../../components/Preferencias";
 import CambiarPassword from "../../components/CambiarPassword";
 import HistorialPedidos from "../../components/HistorialPedidos";
+import PanelDesplegable from "../../components/PanelDesplegable";
 import ProductCard from "../../components/ProductCard";
 
 // Datos del usuario que viajan al backend (por ejemplo, al guardar una preferencia).
@@ -90,21 +91,11 @@ export default function Perfil() {
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row g-3 mb-4">
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-lg-7">
           {/* Tarjetas del perfil. Fondo: .tarjeta-perfil en global.css */}
           <PerfilDatos usuario={usuario} onGuardar={guardarDatos} />
         </div>
-        <div className="col-12 col-md-6">
-          <Preferencias
-            categorias={categorias}
-            elegidas={preferencias}
-            onAlternar={alternarPreferencia}
-          />
-        </div>
-      </div>
-
-      <div className="row g-3 mb-4">
-        <div className="col-12 col-lg-6">
+        <div className="col-12 col-lg-5">
           <div className="card h-100 tarjeta-perfil">
             <div className="card-body">
               <h2 className="h5 mb-3">Mis beneficios</h2>
@@ -130,13 +121,23 @@ export default function Perfil() {
             </div>
           </div>
         </div>
-        <div className="col-12 col-lg-6">
-          <CambiarPassword />
-        </div>
       </div>
 
-      <h2 className="h5">Historial de pedidos</h2>
-      <HistorialPedidos pedidos={pedidos} />
+      <PanelDesplegable titulo="Mis preferencias">
+        <Preferencias
+          categorias={categorias}
+          elegidas={preferencias}
+          onAlternar={alternarPreferencia}
+        />
+      </PanelDesplegable>
+
+      <PanelDesplegable titulo="Seguridad">
+        <CambiarPassword />
+      </PanelDesplegable>
+
+      <PanelDesplegable titulo="Historial de pedidos" abiertoInicial>
+        <HistorialPedidos pedidos={pedidos} />
+      </PanelDesplegable>
 
       <h2 className="h5 mt-4">Recomendados para ti</h2>
       <div className="row g-3">

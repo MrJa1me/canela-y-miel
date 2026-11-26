@@ -80,11 +80,11 @@ function PerfilDatos({ usuario, onGuardar }) {
         {mensaje && <div className="alert alert-info py-2 small">{mensaje}</div>}
 
         {!editando ? (
-          <div className="d-flex gap-3">
-            <Avatar usuario={usuario} tamano={64} />
+          <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+            <Avatar usuario={usuario} tamano={88} />
             <div>
-              <p className="mb-1"><strong>Nombre:</strong> {usuario.nombre}</p>
-              <p className="mb-1"><strong>Correo:</strong> {usuario.correo}</p>
+              <h3 className="h4 mb-1">{usuario.nombre}</h3>
+              <p className="small text-secondary mb-2">{usuario.correo}</p>
               <p className="mb-1"><strong>Teléfono:</strong> {usuario.telefono || "Sin registrar"}</p>
               <p className="mb-0"><strong>Dirección:</strong> {usuario.direccion || "Sin registrar"}</p>
             </div>

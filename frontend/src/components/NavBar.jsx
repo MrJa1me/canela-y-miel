@@ -6,10 +6,6 @@ import Avatar from './Avatar'
 // Devuelve la clase de Bootstrap para marcar el enlace activo.
 const claseEnlace = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
 
-// El enlace del perfil lleva el avatar al lado del texto.
-const claseEnlacePerfil = ({ isActive }) =>
-  `nav-link d-inline-flex align-items-center gap-1${isActive ? ' active' : ''}`
-
 export default function NavBar() {
   const { usuario, cerrarSesion } = useAuth()
   const { items } = useCart()
@@ -69,35 +65,37 @@ export default function NavBar() {
             </li>
 
             {usuario ? (
-              <>
-                <li className="nav-item">
-                  <NavLink className={claseEnlacePerfil} to="/perfil">
-                    <Avatar usuario={usuario} tamano={24} />
-                    <span>Mi perfil</span>
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink className={claseEnlace} to="/seguimiento">
-                    Seguimiento
-                  </NavLink>
-                </li>
-                {usuario.rol === 'ADMIN' && (
-                  <li className="nav-item">
-                    <NavLink className={claseEnlace} to="/admin">
-                      Panel admin
-                    </NavLink>
+              <li className="nav-item dropdown">
+                <button
+                  type="button"
+                  className="nav-link dropdown-toggle d-inline-flex align-items-center gap-1"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <Avatar usuario={usuario} tamano={24} />
+                  <span className="d-none d-lg-inline">{usuario.nombre.split(' ')[0]}</span>
+                </button>
+
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <Link className="dropdown-item" to="/perfil">Mi perfil</Link>
                   </li>
-                )}
-                <li className="nav-item">
-                  <button
-                    type="button"
-                    className="nav-link bg-transparent border-0"
-                    onClick={salir}
-                  >
-                    Salir
-                  </button>
-                </li>
-              </>
+                  <li>
+                    <Link className="dropdown-item" to="/seguimiento">Seguimiento</Link>
+                  </li>
+                  {usuario.rol === 'ADMIN' && (
+                    <li>
+                      <Link className="dropdown-item" to="/admin">Panel admin</Link>
+                    </li>
+                  )}
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <button type="button" className="dropdown-item" onClick={salir}>
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </ul>
+              </li>
             ) : (
               <>
                 <li className="nav-item">

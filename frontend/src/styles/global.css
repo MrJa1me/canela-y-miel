@@ -67,24 +67,19 @@ h6 {
   background-color: var(--color-tarjeta);
 }
 
-/* Menú lateral del administrador */
-.menu-admin .nav-link {
-  border-radius: 0.5rem;
-  padding: 0.45rem 0.7rem;
+/* Las tarjetas dentro de un panel del perfil se integran con él. */
+.panel-desplegable .card {
+  border: 0;
+  background: transparent;
 }
 
-.menu-admin .nav-link.active {
-  background-color: var(--color-primary-soft);
-  color: var(--color-secondary);
+.panel-desplegable .card-body {
+  padding: 0;
 }
 
-@media (min-width: 768px) {
-  .menu-admin {
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    min-height: calc(100vh - 70px);
-  }
+/* El título del panel ya nombra la sección: se oculta el de la tarjeta interna. */
+.panel-desplegable .card h2 {
+  display: none;
 }
 
 /* Todas las tarjetas con imagen usan el mismo alto (no salta el diseño). */

@@ -48,6 +48,11 @@
   box-shadow: 0 0.5rem 1rem var(--color-shadow);
 }
 
+/* Contenido de los paneles del perfil */
+.panel-contenido {
+  animation: aparecer 250ms ease;
+}
+
 /* Botones */
 .btn {
   transition: transform 200ms ease, background-color 200ms ease,
