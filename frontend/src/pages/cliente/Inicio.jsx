@@ -105,6 +105,7 @@ export default function Inicio() {
 
       <section className="mb-5 revelar">
         <h2 className="h3 mb-3">Nuestras categorías</h2>
+        {/* Tarjetas de categorías del Home. Fondo: .tarjeta-categoria en global.css */}
         <div className="row g-3">
           {categorias.map((nombre) => {
             const cantidad = productos.filter((p) => p.categoria === nombre).length;
@@ -112,7 +113,7 @@ export default function Inicio() {
               <div className="col-6 col-md-3" key={nombre}>
                 <Link
                   to={`/catalogo?categoria=${encodeURIComponent(nombre)}`}
-                  className="card h-100 tarjeta-hover text-decoration-none"
+                  className="card h-100 tarjeta-hover tarjeta-categoria text-decoration-none"
                 >
                   <div className="card-body">
                     <h3 className="h6 mb-1">{nombre}</h3>
@@ -138,10 +139,11 @@ export default function Inicio() {
 
       <section className="mb-5 revelar">
         <h2 className="h3 mb-3">Beneficios y promociones</h2>
+        {/* Tarjetas de beneficios del Home. Fondo: .tarjeta-beneficio en global.css */}
         <div className="row g-3">
           {BENEFICIOS.map((beneficio) => (
             <div className="col-12 col-sm-6 col-lg-3" key={beneficio.titulo}>
-              <div className="card h-100 tarjeta-hover">
+              <div className="card h-100 tarjeta-hover tarjeta-beneficio">
                 <div className="card-body">
                   <h3 className="h4 mb-2">{beneficio.titulo}</h3>
                   <p className="mb-0 small">{beneficio.texto}</p>
@@ -190,10 +192,11 @@ export default function Inicio() {
       <section className="mb-5 revelar">
         <h2 className="h3 mb-1">Recetas y consejos</h2>
         <p className="small text-secondary">Contenido de demostración.</p>
+        {/* Tarjetas del blog del Home. Fondo: .tarjeta-blog en global.css */}
         <div className="row g-3">
           {RECETAS.map((receta) => (
             <div className="col-12 col-md-4" key={receta.titulo}>
-              <article className="card h-100 tarjeta-hover">
+              <article className="card h-100 tarjeta-hover tarjeta-blog">
                 <img
                   src={receta.imagen}
                   alt={receta.titulo}

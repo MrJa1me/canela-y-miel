@@ -14,6 +14,10 @@
   --color-inverted: #3e2723;
   --color-shadow: rgba(93, 64, 55, 0.16);
 
+  /* Fondo base de todas las tarjetas. Cambia este valor para todas,
+     o una clase .tarjeta-* de global.css para una sección. */
+  --color-tarjeta: var(--color-neutral);
+
   /* Tipografías */
   --font-display: 'Playfair Display', serif;
   --font-body: 'Lato', sans-serif;
@@ -29,6 +33,7 @@
   --bs-heading-color: var(--color-tertiary);
   --bs-primary-bg-subtle: var(--color-primary-soft);
   --bs-primary-text-emphasis: var(--color-secondary);
+  --bs-card-bg: var(--color-tarjeta);
   --bs-link-color: var(--color-secondary);
   --bs-link-color-rgb: var(--bs-secondary-rgb);
   --bs-link-hover-color: var(--color-secondary-hover);

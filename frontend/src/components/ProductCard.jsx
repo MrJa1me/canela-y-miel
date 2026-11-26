@@ -3,6 +3,8 @@ import { formatPrice } from "../utils/formatPrice";
 
 // Tarjeta de un producto: imagen, nombre, categoría, precio y botones
 function ProductCard({ producto, onAgregar }) {
+  // Tarjeta de producto (Catálogo, Home y relacionados).
+  // Fondo: clase .tarjeta-producto en global.css.
   return (
     <div className="card h-100 tarjeta-hover tarjeta-producto">
       <img

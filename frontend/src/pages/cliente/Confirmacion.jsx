@@ -87,7 +87,7 @@ export default function Confirmacion() {
         </div>
       </div>
 
-      {/* Vista imprimible: el resto de la página se oculta al imprimir */}
+      {/* Boleta imprimible: estilos en global.css (@media print) */}
       <section className="boleta border rounded-3 p-3">
         <div className="d-flex justify-content-between align-items-start">
           <h2 className="h5 mb-1">Boleta #{pedido.id}</h2>

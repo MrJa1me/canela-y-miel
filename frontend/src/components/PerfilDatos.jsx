@@ -66,7 +66,7 @@ function PerfilDatos({ usuario, onGuardar }) {
   }
 
   return (
-    <div className="card h-100">
+    <div className="card h-100 tarjeta-perfil">
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start mb-3">
           <h2 className="h5 mb-0">Mis datos</h2>

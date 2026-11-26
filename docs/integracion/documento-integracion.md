@@ -16,7 +16,7 @@ La aplicación permite:
 
 - Consultar el catálogo de productos sin iniciar sesión.
 - Registrarse e iniciar sesión con JWT.
-- Crear pedidos con descuento Premium, cupones y descuento de stock.
+- Crear pedidos con los descuentos del caso, cupones y descuento de stock.
 - Administrar productos, categorías, pedidos, usuarios y cupones según el rol.
 
 La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a Canela & Miel.
@@ -289,12 +289,13 @@ Los componentes nunca llaman a `fetch`. Todo pasa por `frontend/src/services/`:
 |---|---|
 | `api.js` | Única salida HTTP. Agrega el token, convierte JSON, renueva el token en un 401 y deriva los errores al manejador central. |
 | `errorHandler.js` | Traduce los códigos 400/403/404/409/500 a mensajes para el usuario. |
-| `sesion.js` | Guarda, lee y limpia la sesión en `localStorage`; avisa los cambios a React. |
+| `sesion.js` | Guarda, lee, actualiza y limpia la sesión en `localStorage`; avisa los cambios a React. |
 | `authService.js` | Registro, login, perfil y cierre de sesión. |
 | `productService.js` | Listar, crear, actualizar y eliminar productos. |
 | `categoriaService.js` | Listar categorías. |
 | `orderService.js` | Listar y crear pedidos; avanzar de estado. |
-| `userService.js` | Listar usuarios y cambiar el rol. |
+| `cuponService.js` | Validar un cupón por código (público). |
+| `userService.js` | Administrar usuarios, ver/editar el perfil propio y cambiar la contraseña. |
 
 ### 6.2 Flujo de una petición
 
@@ -344,7 +345,7 @@ Componente: setProductos(...) → React vuelve a dibujar
 
 **Figura 6.** Swagger con el esquema Bearer y los endpoints documentados. El botón **Authorize** permite probar con el token de acceso.
 
-> Las capturas se tomaron con pedidos de demostración creados por la API. Al terminar la prueba se eliminaron y el stock volvió a su valor inicial.
+> Las capturas se tomaron con los pedidos de demostración **#3 y #6** que quedaron en la base local. Para repetirlas, crea pedidos nuevos y vuelve a capturar las figuras.
 
 ## 7. Verificación de entrega
 

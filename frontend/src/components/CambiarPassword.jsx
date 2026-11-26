@@ -46,7 +46,7 @@ function CambiarPassword() {
   }
 
   return (
-    <div className="card h-100">
+    <div className="card h-100 tarjeta-perfil">
       <div className="card-body">
         <h2 className="h5 mb-3">Cambiar contraseña</h2>
 

@@ -26,6 +26,42 @@ h6 {
   font-weight: 700;
 }
 
+/* ============================================================
+   FONDOS DE TARJETAS
+   Para cambiar el fondo de una tarjeta, edita el background-color
+   de la clase que corresponda. Usa solo colores de variables.css.
+   ============================================================ */
+
+/* Catálogo, Home (favoritos) y productos relacionados */
+.tarjeta-producto {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: cuadrícula de categorías */
+.tarjeta-categoria {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: beneficios y promociones */
+.tarjeta-beneficio {
+  background-color: var(--color-tarjeta);
+}
+
+/* Home: blog y recetas */
+.tarjeta-blog {
+  background-color: var(--color-tarjeta);
+}
+
+/* Carrito, Checkout y Confirmación: resumen del pedido */
+.tarjeta-resumen {
+  background-color: var(--color-tarjeta);
+}
+
+/* Perfil: datos, preferencias, beneficios y contraseña */
+.tarjeta-perfil {
+  background-color: var(--color-tarjeta);
+}
+
 /* Todas las tarjetas con imagen usan el mismo alto (no salta el diseño). */
 .imagen-tarjeta {
   width: 100%;

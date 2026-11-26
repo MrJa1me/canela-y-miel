@@ -103,6 +103,7 @@ export default function Catalogo() {
           <p className="small text-secondary">
             {visibles.length} {visibles.length === 1 ? "producto" : "productos"}
           </p>
+          {/* Tarjetas de producto del catálogo. Fondo: .tarjeta-producto en global.css */}
           <div className="row g-3">
             {visibles.map((producto) => (
               <div key={producto.id} className="col-12 col-md-6 col-lg-4">

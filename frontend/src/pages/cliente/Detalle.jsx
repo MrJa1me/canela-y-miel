@@ -187,6 +187,7 @@ export default function Detalle() {
       {relacionados.length > 0 && (
         <>
           <h2 className="h5 mt-5">También te puede gustar</h2>
+          {/* Productos relacionados: usan ProductCard (.tarjeta-producto) */}
           <CarruselProductos
             id="carrusel-relacionados"
             productos={relacionados}

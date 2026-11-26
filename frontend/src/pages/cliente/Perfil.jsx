@@ -91,6 +91,7 @@ export default function Perfil() {
 
       <div className="row g-3 mb-4">
         <div className="col-12 col-md-6">
+          {/* Tarjetas del perfil. Fondo: .tarjeta-perfil en global.css */}
           <PerfilDatos usuario={usuario} onGuardar={guardarDatos} />
         </div>
         <div className="col-12 col-md-6">
@@ -104,7 +105,7 @@ export default function Perfil() {
 
       <div className="row g-3 mb-4">
         <div className="col-12 col-lg-6">
-          <div className="card h-100">
+          <div className="card h-100 tarjeta-perfil">
             <div className="card-body">
               <h2 className="h5 mb-3">Mis beneficios</h2>
               <ul className="list-unstyled mb-0 small">
