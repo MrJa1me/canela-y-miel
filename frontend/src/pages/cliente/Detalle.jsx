@@ -70,9 +70,18 @@ export default function Detalle() {
         </div>
 
         <div className="col-12 col-md-6">
-          <small className="text-secondary">{producto.categoria}</small>
+          <small className="text-secondary">
+            {producto.categoria}
+            {producto.codigo && <> · {producto.codigo}</>}
+          </small>
           <h1 className="h3">{producto.nombre}</h1>
+          {producto.descripcion && (
+            <p className="text-body-secondary">{producto.descripcion}</p>
+          )}
           <p className="h4">{formatPrice(producto.precio)}</p>
+          {producto.porciones && (
+            <p className="small text-secondary">{producto.porciones} porciones aprox.</p>
+          )}
           <p>{sinStock ? "Sin stock" : `Quedan ${producto.stock} unidades`}</p>
 
           {!sinStock && (

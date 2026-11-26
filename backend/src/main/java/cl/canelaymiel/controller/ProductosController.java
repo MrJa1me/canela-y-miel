@@ -50,7 +50,8 @@ public class ProductosController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Producto creado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "409", description = "El código ya está en uso")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -62,7 +63,8 @@ public class ProductosController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Producto actualizado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Producto o categoría no encontrada")
+            @ApiResponse(responseCode = "404", description = "Producto o categoría no encontrada"),
+            @ApiResponse(responseCode = "409", description = "El código ya está en uso")
     })
     @PutMapping("/{id}")
     public ProductoResponse actualizar(@PathVariable Long id, @Valid @RequestBody ProductoRequest request) {

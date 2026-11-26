@@ -2,7 +2,7 @@ import { act } from "react";
 import { dibujar } from "../components/ayudas";
 import { CartProvider, useCart } from "../../src/context/CartContext";
 
-const torta = { id: 1, nombre: "Torta de Chocolate Clásica", precio: 35000 };
+const torta = { id: 1, nombre: "Torta Cuadrada de Chocolate", precio: 45000 };
 
 // Componente de prueba: guarda el carrito en una variable para poder usarlo
 let carrito;

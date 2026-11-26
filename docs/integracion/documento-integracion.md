@@ -99,7 +99,7 @@ Todos los errores usan la misma estructura:
 {
   "fecha": "2026-11-22T12:00:00",
   "estado": 409,
-  "mensaje": "Stock insuficiente para Torta de Chocolate Clásica"
+  "mensaje": "Stock insuficiente para Torta Cuadrada de Chocolate"
 }
 ```
 
@@ -120,17 +120,20 @@ Todos los errores usan la misma estructura:
 |---|---|---|---|---|---|
 | GET | `/productos` | Lista los productos | — | 200 | Público |
 | GET | `/productos/{id}` | Obtiene un producto | — | 200, 404 | Público |
-| POST | `/productos` | Crea un producto | `ProductoRequest` | 201, 400, 404 | `ADMIN` |
-| PUT | `/productos/{id}` | Actualiza un producto | `ProductoRequest` | 200, 400, 404 | `ADMIN` |
+| POST | `/productos` | Crea un producto | `ProductoRequest` | 201, 400, 404, 409 | `ADMIN` |
+| PUT | `/productos/{id}` | Actualiza un producto | `ProductoRequest` | 200, 400, 404, 409 | `ADMIN` |
 | DELETE | `/productos/{id}` | Elimina un producto | — | 204, 404, 409 | `ADMIN` |
 
 `ProductoRequest`:
 
 ```json
 {
-  "nombre": "Torta de Chocolate Clásica",
-  "precio": 35000,
-  "stock": 8,
+  "codigo": "TC001",
+  "nombre": "Torta Cuadrada de Chocolate",
+  "descripcion": "Deliciosa torta de chocolate con capas de ganache y un toque de avellanas.",
+  "precio": 45000,
+  "stock": 10,
+  "porciones": 20,
   "imagen": "/img/chocolate.jpg",
   "categoriaId": 1,
   "activo": true
@@ -178,18 +181,18 @@ Respuesta `201`:
   "cliente": "Cliente Demo",
   "correo": "cliente@canelaymiel.cl",
   "estado": "Recibido",
-  "subtotal": 70000,
-  "descuento": 13300,
+  "subtotal": 90000,
+  "descuento": 17100,
   "envio": 8000,
-  "total": 64700,
+  "total": 80900,
   "cuponCodigo": "MIEL10",
   "detalles": [
     {
       "productoId": 1,
-      "producto": "Torta de Chocolate Clásica",
+      "producto": "Torta Cuadrada de Chocolate",
       "cantidad": 2,
-      "precioUnitario": 35000,
-      "subtotal": 70000
+      "precioUnitario": 45000,
+      "subtotal": 90000
     }
   ]
 }
@@ -197,13 +200,13 @@ Respuesta `201`:
 
 Cálculo del ejemplo:
 
-1. Subtotal: `2 × 35.000 = 70.000`.
-2. Descuento Premium (10%): `7.000`.
-3. Saldo: `63.000`.
-4. Cupón `MIEL10` (10% sobre el saldo): `6.300`.
-5. Descuento total: `13.300`.
+1. Subtotal: `2 × 45.000 = 90.000`.
+2. Descuento Premium (10%): `9.000`.
+3. Saldo: `81.000`.
+4. Cupón `MIEL10` (10% sobre el saldo): `8.100`.
+5. Descuento total: `17.100`.
 6. Envío: `8.000`.
-7. **Total: 64.700**.
+7. **Total: 80.900**.
 
 El `clienteId` solo puede ser el propio para un `CLIENTE`; si envía otro, responde **403**.
 

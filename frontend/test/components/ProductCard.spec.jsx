@@ -4,9 +4,10 @@ import ProductCard from "../../src/components/ProductCard";
 
 const producto = {
   id: 1,
-  nombre: "Torta de Chocolate Clásica",
-  categoria: "Tortas",
-  precio: 35000,
+  codigo: "TC001",
+  nombre: "Torta Cuadrada de Chocolate",
+  categoria: "Tortas Cuadradas",
+  precio: 45000,
   imagen: "/img/chocolate.jpg",
 };
 
@@ -28,9 +29,13 @@ describe("ProductCard", () => {
   afterEach(() => pantalla.limpiar());
 
   it("muestra nombre, categoría y precio con punto de miles", () => {
-    expect(pantalla.textContent).toContain("Torta de Chocolate Clásica");
-    expect(pantalla.textContent).toContain("Tortas");
-    expect(pantalla.textContent).toContain("$35.000");
+    expect(pantalla.textContent).toContain("Torta Cuadrada de Chocolate");
+    expect(pantalla.textContent).toContain("Tortas Cuadradas");
+    expect(pantalla.textContent).toContain("$45.000");
+  });
+
+  it("muestra el código del catálogo", () => {
+    expect(pantalla.textContent).toContain("TC001");
   });
 
   it("al apretar Añadir llama a onAgregar con el producto", () => {

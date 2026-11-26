@@ -11,7 +11,10 @@ function ProductCard({ producto, onAgregar }) {
         alt={producto.nombre}
       />
       <div className="card-body d-flex flex-column">
-        <small className="text-secondary">{producto.categoria}</small>
+        <small className="text-secondary">
+          {producto.categoria}
+          {producto.codigo && <> · {producto.codigo}</>}
+        </small>
         <h2 className="h6">{producto.nombre}</h2>
         <p className="fw-bold mb-3">{formatPrice(producto.precio)}</p>
 

@@ -2,6 +2,7 @@ package cl.canelaymiel.service;
 
 import cl.canelaymiel.dto.ProductoRequest;
 import cl.canelaymiel.dto.ProductoResponse;
+import cl.canelaymiel.exception.ConflictoException;
 import cl.canelaymiel.exception.RecursoNoEncontradoException;
 import cl.canelaymiel.model.Categoria;
 import cl.canelaymiel.model.Producto;
@@ -31,6 +32,9 @@ public class ProductoService {
 
     @Transactional
     public ProductoResponse crear(ProductoRequest request) {
+        String codigo = request.codigo().trim().toUpperCase();
+        validarCodigoUnico(codigo, null);
+
         Producto producto = new Producto(
                 request.nombre().trim(),
                 request.precio(),
@@ -39,15 +43,25 @@ public class ProductoService {
                 buscarCategoria(request.categoriaId()),
                 request.activo() == null || request.activo());
 
+        producto.setCodigo(codigo);
+        producto.setDescripcion(request.descripcion().trim());
+        producto.setPorciones(request.porciones());
+
         return ProductoResponse.desde(productoRepository.save(producto));
     }
 
     @Transactional
     public ProductoResponse actualizar(Long id, ProductoRequest request) {
         Producto producto = buscar(id);
+        String codigo = request.codigo().trim().toUpperCase();
+        validarCodigoUnico(codigo, id);
+
+        producto.setCodigo(codigo);
         producto.setNombre(request.nombre().trim());
+        producto.setDescripcion(request.descripcion().trim());
         producto.setPrecio(request.precio());
         producto.setStock(request.stock());
+        producto.setPorciones(request.porciones());
         producto.setImagen(request.imagen().trim());
         producto.setCategoria(buscarCategoria(request.categoriaId()));
         producto.setActivo(request.activo() == null || request.activo());
@@ -68,5 +82,14 @@ public class ProductoService {
     private Categoria buscarCategoria(Long id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada"));
+    }
+
+    // El código identifica al producto en el catálogo: no puede repetirse.
+    private void validarCodigoUnico(String codigo, Long id) {
+        productoRepository.findByCodigoIgnoreCase(codigo)
+                .filter(otro -> !otro.getId().equals(id))
+                .ifPresent(otro -> {
+                    throw new ConflictoException("El código " + codigo + " ya está en uso");
+                });
     }
 }

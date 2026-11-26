@@ -30,7 +30,7 @@ function Filtros({ categorias, categoria, precioMax, onCategoria, onPrecioMax })
           type="range"
           className="form-range"
           min="0"
-          max="50000"
+          max="60000"
           step="1000"
           value={precioMax}
           onChange={(e) => onPrecioMax(Number(e.target.value))}

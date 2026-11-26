@@ -132,15 +132,27 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 
 ### 5.1 Productos
 
-| Producto | Categoría | Precio |
-|---|---|---|
-| Torta de Chocolate Clásica | Tortas | $35.000 |
-| Tartaleta de Frutos Rojos | Postres | $28.000 |
-| Pancakes Sin Gluten | Sin gluten | $22.000 |
-| Cheesecake de Frutos Rojos | Postres | $30.000 |
-| Tres Leches Clásica | Tortas | $32.000 |
-| Pastel de Zanahoria | Tortas | $26.000 |
-| Caja de Macarons Variados (12 uds) | Postres | $42.000 |
+Catálogo del caso (8 categorías y 16 productos). Las porciones son un dato de demostración:
+el enunciado no entrega tamaños.
+
+| Código | Producto | Categoría | Porciones | Precio |
+|---|---|---|---|---|
+| TC001 | Torta Cuadrada de Chocolate | Tortas Cuadradas | 20 | $45.000 |
+| TC002 | Torta Cuadrada de Frutas | Tortas Cuadradas | 24 | $50.000 |
+| TT001 | Torta Circular de Vainilla | Tortas Circulares | 12 | $40.000 |
+| TT002 | Torta Circular de Manjar | Tortas Circulares | 16 | $42.000 |
+| PI001 | Mousse de Chocolate | Postres Individuales | 1 | $5.000 |
+| PI002 | Tiramisú Clásico | Postres Individuales | 1 | $5.500 |
+| PSA001 | Torta Sin Azúcar de Naranja | Productos Sin Azúcar | 12 | $48.000 |
+| PSA002 | Cheesecake Sin Azúcar | Productos Sin Azúcar | 10 | $47.000 |
+| PT001 | Empanada de Manzana | Pastelería Tradicional | 1 | $3.000 |
+| PT002 | Tarta de Santiago | Pastelería Tradicional | 8 | $6.000 |
+| PG001 | Brownie Sin Gluten | Productos Sin Gluten | 1 | $4.000 |
+| PG002 | Pan Sin Gluten | Productos Sin Gluten | 8 | $3.500 |
+| PV001 | Torta Vegana de Chocolate | Productos Vegana | 12 | $50.000 |
+| PV002 | Galletas Veganas de Avena | Productos Vegana | 12 | $4.500 |
+| TE001 | Torta Especial de Cumpleaños | Tortas Especiales | 30 | $55.000 |
+| TE002 | Torta Especial de Boda | Tortas Especiales | 40 | $60.000 |
 
 ### 5.2 Cálculo del pedido
 
@@ -183,7 +195,7 @@ Recibido → En preparación → Listo para despacho → En camino → Entregado
 | `Rol` | id, nombre (ADMIN/CLIENTE) | 1 rol → muchos usuarios |
 | `Usuario` | id, nombre, correo único, password (BCrypt), premium, activo | Muchos usuarios → 1 rol |
 | `Categoria` | id, nombre único | 1 categoría → muchos productos |
-| `Producto` | id, nombre, precio, stock, imagen, activo | Muchos productos → 1 categoría |
+| `Producto` | id, código único, nombre, descripción, precio, stock, porciones, imagen, activo | Muchos productos → 1 categoría |
 | `Pedido` | id, fecha, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |
 | `DetallePedido` | id, cantidad, precio unitario, subtotal | Muchos detalles → 1 pedido; muchos detalles → 1 producto |
 | `EstadoPedido` | id, nombre único, orden único | 1 estado → muchos pedidos |

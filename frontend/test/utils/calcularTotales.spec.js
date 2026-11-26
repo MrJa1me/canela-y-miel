@@ -1,8 +1,8 @@
 import { calcularTotales } from "../../src/utils/calcularTotales";
 
 // Producto de ejemplo para no repetirlo en cada prueba
-const torta = { id: 1, nombre: "Torta de Chocolate Clásica", precio: 35000, cantidad: 1 };
-const tartaleta = { id: 2, nombre: "Tartaleta de Frutos Rojos", precio: 28000, cantidad: 2 };
+const torta = { id: 1, nombre: "Torta Cuadrada de Chocolate", precio: 45000, cantidad: 1 };
+const tartaleta = { id: 2, nombre: "Tarta de Santiago", precio: 6000, cantidad: 2 };
 
 describe("calcularTotales", () => {
   it("con el carrito vacío todo vale 0, incluido el envío", () => {
@@ -14,20 +14,20 @@ describe("calcularTotales", () => {
   });
 
   it("con productos suma precio x cantidad y agrega $8.000 de envío", () => {
-    // 35.000 + (28.000 x 2) = 91.000, más envío 8.000
+    // 45.000 + (6.000 x 2) = 57.000, más envío 8.000
     const resultado = calcularTotales([torta, tartaleta], false);
 
-    expect(resultado.subtotal).toBe(91000);
+    expect(resultado.subtotal).toBe(57000);
     expect(resultado.envio).toBe(8000);
-    expect(resultado.total).toBe(99000);
+    expect(resultado.total).toBe(65000);
   });
 
   it("al cliente Premium le descuenta el 10% de los productos", () => {
     const resultado = calcularTotales([torta], true);
 
-    expect(resultado.descuento).toBe(3500);
-    // 35.000 - 3.500 + 8.000
-    expect(resultado.total).toBe(39500);
+    expect(resultado.descuento).toBe(4500);
+    // 45.000 - 4.500 + 8.000
+    expect(resultado.total).toBe(48500);
   });
 
   it("al cliente normal no le descuenta nada", () => {

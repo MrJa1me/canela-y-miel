@@ -18,7 +18,7 @@ export default function Catalogo() {
 
   // Filtros elegidos por el cliente
   const [categoria, setCategoria] = useState("");
-  const [precioMax, setPrecioMax] = useState(50000);
+  const [precioMax, setPrecioMax] = useState(60000);
 
   // Al abrir la página, pide productos y categorías al backend
   useEffect(() => {
