@@ -338,11 +338,11 @@ La API se documenta en detalle en `docs/integracion/documento-integracion.md` y 
 
 ### 10.2 Frontend
 
-**52 pruebas** con Jasmine + Karma, con mocks de `localStorage` y espías de funciones:
+**54 pruebas** con Jasmine + Karma, con mocks de `localStorage` y espías de funciones:
 
 | Archivo | Qué cubre |
 |---|---|
-| `test/components/` | `FormField`, `ProductCard` y `Avatar` (props, render y eventos) |
+| `test/components/` | `FormField`, `ProductCard`, `Avatar` y `PanelDesplegable` (props, render, eventos y apertura del panel) |
 | `test/context/CartContext.spec.jsx` | Carrito, `localStorage` y mensaje por producto |
 | `test/utils/calcularTotales.spec.js` | Envío, Premium, 50%, FELICES50, cupón, solo el mayor y torta gratis |
 | `test/utils/descuentos.spec.js` | Edad, cumpleaños, correo institucional y beneficios del usuario |
@@ -393,7 +393,7 @@ Usuarios de prueba:
 |---|---|---|
 | EP2 — Proyecto con framework JS (IE2.1.1) | React + Vite + Router, estructura por capas | Cumplido |
 | EP2 — Componentes con props/estados y Bootstrap (IE2.1.2) | Componentes del admin, `NavBar`, `ProtectedRoute`, grillas y tablas responsivas | Cumplido |
-| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Cumplido: 52 pruebas |
+| EP2 — 10 pruebas unitarias (IE2.2.x) | `frontend/test/` | Cumplido: 54 pruebas |
 | EP2 — Proceso de testeo y cobertura (IE2.3.x) | Configuración Karma + reporte | Cumplido: `npm run test:coverage` |
 | EP3 — Backend, base de datos, lógica y modelos (IE3.1.1) | Entidades, servicios y MySQL | Cumplido |
 | EP3 — API REST con CRUD y Swagger (IE3.2.1) | 33 operaciones documentadas | Cumplido |
