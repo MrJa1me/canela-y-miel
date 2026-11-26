@@ -43,6 +43,20 @@ public class Usuario {
     // Se calcula al registrarse: sirve para la torta gratis de cumpleaños.
     private Boolean correoInstitucional;
 
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(length = 200)
+    private String direccion;
+
+    // Categorías favoritas separadas por coma. Se editan en el perfil.
+    @Column(length = 500)
+    private String preferencias;
+
+    // Avatar predefinido (ruta de /img/avatares). Nulo = iniciales.
+    @Column(length = 100)
+    private String avatar;
+
     @Column(nullable = false)
     private boolean premium;
 

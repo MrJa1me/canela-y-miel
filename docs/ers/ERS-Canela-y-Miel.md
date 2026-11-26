@@ -113,6 +113,7 @@ Canela & Miel es una pastelería artesanal que vende tortas, postres y productos
 | RF-19 | Restricciones por rol | Ocultar en el frontend lo que el rol no puede usar y validarlo en el backend | Sistema | Alta |
 | RF-20 | Datos semilla | Crear roles, estados, categorías, productos, usuarios y cupones al arrancar; completar el catálogo sin borrar datos | Sistema | Media |
 | RF-21 | Torta de cumpleaños Duoc | Regalar la torta más barata del pedido a los correos institucionales el día de su cumpleaños, solo si hay otro producto pagado | Cliente Duoc | Alta |
+| RF-22 | Perfil propio | Ver y editar nombre, teléfono, dirección, preferencias y avatar; cambiar la contraseña con la actual; solo el dueño de la cuenta | Cliente / Admin | Alta |
 
 ## 4. Requisitos no funcionales
 
@@ -197,7 +198,7 @@ Recibido → En preparación → Listo para despacho → En camino → Entregado
 | Entidad | Campos principales | Relaciones |
 |---|---|---|
 | `Rol` | id, nombre (ADMIN/CLIENTE) | 1 rol → muchos usuarios |
-| `Usuario` | id, nombre, correo único, password (BCrypt), fecha de nacimiento, código promocional, correo institucional, premium, activo | Muchos usuarios → 1 rol |
+| `Usuario` | id, nombre, correo único, password (BCrypt), teléfono, dirección, fecha de nacimiento, código promocional, correo institucional, preferencias, avatar, premium, activo | Muchos usuarios → 1 rol |
 | `Categoria` | id, nombre único | 1 categoría → muchos productos |
 | `Producto` | id, código único, nombre, descripción, precio, stock, porciones, imagen, activo | Muchos productos → 1 categoría |
 | `Pedido` | id, fecha, fecha de entrega, dirección, teléfono, subtotal, descuento, envio, total | 1 cliente → muchos pedidos; 1 estado → muchos pedidos; 1 cupón → muchos pedidos |

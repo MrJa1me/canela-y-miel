@@ -105,7 +105,7 @@ Base: `http://localhost:8080/api/v1` · Documentación: <http://localhost:8080/s
 | Productos | `GET/POST /productos` · `GET/PUT/DELETE /productos/{id}` |
 | Categorías | `GET/POST /categorias` · `GET/PUT/DELETE /categorias/{id}` |
 | Pedidos | `GET/POST /pedidos` · `GET/DELETE /pedidos/{id}` · `PATCH /pedidos/{id}/estado` |
-| Usuarios | `GET/POST /usuarios` · `GET/PUT/DELETE /usuarios/{id}` |
+| Usuarios | `GET/POST /usuarios` · `GET/PUT/DELETE /usuarios/{id}` · `GET/PUT /usuarios/me` · `PUT /usuarios/me/password` |
 | Cupones | `GET/POST /cupones` · `GET/PUT/DELETE /cupones/{id}` · `GET /cupones/validar/{codigo}` (público) |
 
 Reglas de negocio de un pedido: subtotal → torta gratis de cumpleaños Duoc (si aplica) → **solo el mayor**
@@ -121,7 +121,7 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 ### Acceso y roles
 
 - **Público:** catálogo (`GET /productos`, `GET /categorias`), registro, login, refresh, validar cupón y Swagger.
-- **CLIENTE:** crea pedidos para su propia cuenta y ve solo los suyos.
+- **CLIENTE:** crea pedidos para su propia cuenta, ve solo los suyos y edita su perfil (datos, preferencias, avatar y contraseña).
 - **ADMIN:** crea/edita/elimina productos y categorías, administra usuarios y cupones, y cambia estados.
 - El token de acceso dura **15 minutos** y el refresh **7 días**. Van en `Authorization: Bearer <token>`.
 - La clave para firmar los tokens está en `JWT_SECRET` (`.env`).

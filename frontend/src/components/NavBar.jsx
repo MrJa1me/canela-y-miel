@@ -1,8 +1,13 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Avatar from './Avatar'
 
 // Devuelve la clase de Bootstrap para marcar el enlace activo.
 const claseEnlace = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
+
+// El enlace del perfil lleva el avatar al lado del texto.
+const claseEnlacePerfil = ({ isActive }) =>
+  `nav-link d-inline-flex align-items-center gap-1${isActive ? ' active' : ''}`
 
 export default function NavBar() {
   const { usuario, cerrarSesion } = useAuth()
@@ -53,8 +58,9 @@ export default function NavBar() {
             {usuario ? (
               <>
                 <li className="nav-item">
-                  <NavLink className={claseEnlace} to="/perfil">
-                    Mi perfil
+                  <NavLink className={claseEnlacePerfil} to="/perfil">
+                    <Avatar usuario={usuario} tamano={24} />
+                    <span>Mi perfil</span>
                   </NavLink>
                 </li>
                 <li className="nav-item">

@@ -14,6 +14,15 @@ public final class ReglasCliente {
     private static final List<String> DOMINIOS_INSTITUCIONALES =
             List.of("@duoc.cl", "@duocuc.cl", "@profesor.duoc.cl");
 
+    // Avatares incluidos en el frontend. El backend solo acepta estos valores.
+    public static final List<String> AVATARES = List.of(
+            "/img/avatares/avatar-1.svg",
+            "/img/avatares/avatar-2.svg",
+            "/img/avatares/avatar-3.svg",
+            "/img/avatares/avatar-4.svg",
+            "/img/avatares/avatar-5.svg",
+            "/img/avatares/avatar-6.svg");
+
     private ReglasCliente() {
     }
 

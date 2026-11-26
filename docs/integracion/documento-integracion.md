@@ -51,7 +51,7 @@ La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a C
 | Rol | Puede |
 |---|---|
 | Público (sin sesión) | Ver catálogo, registrarse, iniciar sesión, validar un cupón, ver Swagger |
-| `CLIENTE` | Ver y crear **sus propios** pedidos, ver su perfil |
+| `CLIENTE` | Ver y crear **sus propios** pedidos, ver y editar su perfil |
 | `ADMIN` | Todo lo del cliente, más productos, categorías, usuarios, cupones y cambios de estado |
 
 ### 3.3 Respuesta del login
@@ -67,6 +67,10 @@ La estructura sigue el Anexo 2 del curso, adaptada del ejemplo "Pokémon Go" a C
     "fechaNacimiento": "1990-05-20",
     "codigoPromocional": null,
     "correoInstitucional": false,
+    "telefono": null,
+    "direccion": null,
+    "preferencias": [],
+    "avatar": null,
     "premium": true,
     "activo": true,
     "rol": "CLIENTE"
@@ -229,8 +233,26 @@ El `clienteId` solo puede ser el propio para un `CLIENTE`; si envía otro, respo
 | POST | `/usuarios` | Crea un usuario con rol | `UsuarioRequest` | 201, 400, 409 | `ADMIN` |
 | PUT | `/usuarios/{id}` | Actualiza datos o rol | `UsuarioRequest` | 200, 400, 404, 409 | `ADMIN` |
 | DELETE | `/usuarios/{id}` | Elimina un usuario | — | 204, 404, 409 | `ADMIN` |
+| GET | `/usuarios/me` | Perfil del usuario autenticado | — | 200, 401 | Autenticado |
+| PUT | `/usuarios/me` | Edita nombre, teléfono, dirección, preferencias y avatar | `PerfilRequest` | 200, 400, 401 | Autenticado |
+| PUT | `/usuarios/me/password` | Cambia la contraseña | `{ actual, nueva }` | 204, 400, 401 | Autenticado |
 
-La contraseña se envía solo al crear o al cambiarla. Si se omite en un `PUT`, se conserva la anterior. Nunca se devuelve en las respuestas.
+`PerfilRequest`:
+
+```json
+{
+  "nombre": "Ana Pérez",
+  "telefono": "912345678",
+  "direccion": "Av. Siempre Viva 123",
+  "preferencias": ["Tortas Cuadradas", "Productos Vegana"],
+  "avatar": "/img/avatares/avatar-2.svg"
+}
+```
+
+El avatar debe ser uno de los 6 disponibles en `/img/avatares/`; cualquier otra ruta responde **400**.
+La contraseña nunca se devuelve. El cambio de contraseña exige la actual y la compara con BCrypt.
+
+La contraseña se envía solo al crear o al cambiarla. Si se omite en un `PUT`, se conserva la anterior.
 
 ### 5.6 Cupones
 

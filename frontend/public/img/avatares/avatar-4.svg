@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Dona de frambuesa">
+  <circle cx="48" cy="48" r="48" fill="#D8C7F0"/>
+  <circle cx="48" cy="48" r="25" fill="#FFF8EE"/>
+  <circle cx="48" cy="48" r="9" fill="#D8C7F0"/>
+  <g stroke="#D94F5C" stroke-width="3" stroke-linecap="round">
+    <path d="M36 39l6 3"/>
+    <path d="M56 37l5 4"/>
+    <path d="M35 53l7 1"/>
+    <path d="M55 55l6-2"/>
+  </g>
+</svg>

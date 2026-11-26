@@ -5,7 +5,7 @@ import {
   perfil,
   registro,
 } from '../services/authService'
-import { leerToken, leerUsuario } from '../services/sesion'
+import { guardarUsuario, leerToken, leerUsuario } from '../services/sesion'
 
 const AuthContext = createContext(null)
 
@@ -53,8 +53,16 @@ export function AuthProvider({ children }) {
     setUsuario(null)
   }
 
+  // Se usa después de editar el perfil para refrescar el NavBar y el localStorage.
+  function actualizarUsuario(nuevo) {
+    guardarUsuario(nuevo)
+    setUsuario(nuevo)
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, cargando, iniciarSesion, registrarse, cerrarSesion }}>
+    <AuthContext.Provider
+      value={{ usuario, cargando, iniciarSesion, registrarse, cerrarSesion, actualizarUsuario }}
+    >
       {children}
     </AuthContext.Provider>
   )
