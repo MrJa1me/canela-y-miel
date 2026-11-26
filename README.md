@@ -19,7 +19,25 @@ En la raíz del proyecto:
 Copy-Item .env.example .env
 ```
 
-Abre `.env` y cambia las claves si quieres. El archivo `.env` nunca se sube a Git.
+Abre `.env` y cambia las claves si quieres. El backend **lee ese mismo `.env`** al arrancar
+(`spring.config.import=optional:file:../.env[.properties]` en `application.properties`), así que no hay
+que duplicar valores ni configurar variables en Windows. El archivo `.env` nunca se sube a Git.
+
+`MYSQL_PASSWORD` (la usa el contenedor) y `DB_PASSWORD` (la usa el backend) **deben tener el mismo valor**.
+
+| Variable | Para qué sirve | Valor por defecto |
+|---|---|---|
+| `MYSQL_ROOT_PASSWORD` | Clave de root de MySQL en Docker | Ninguno, la eliges |
+| `MYSQL_DATABASE` | Nombre de la base que crea Docker | `canela_miel` |
+| `MYSQL_USER` | Usuario que crea Docker | `canela` |
+| `MYSQL_PASSWORD` | Clave de ese usuario en MySQL | Ninguno, la eliges |
+| `DB_URL` | URL JDBC que usa el backend | `jdbc:mysql://localhost:3306/canela_miel?...` |
+| `DB_USER` | Usuario del backend | `canela` |
+| `DB_PASSWORD` | Clave del backend (igual a `MYSQL_PASSWORD`) | Ninguno, la eliges |
+| `JWT_SECRET` | Firma de los tokens (mínimo 32 caracteres) | Ninguno, es obligatoria |
+| `SERVER_PORT` | Puerto del backend | `8080` |
+| `JWT_ACCESS_MINUTOS` | Duración del token de acceso | `15` |
+| `JWT_REFRESH_DIAS` | Duración del refresh token | `7` |
 
 ### 2. Base de datos
 
@@ -34,9 +52,9 @@ Debes ver `canela-mysql` como `healthy` y `canela-adminer` arriba.
 - Adminer (interfaz web): <http://localhost:8081>
   - Sistema: `MySQL`
   - Servidor: `mysql`
-  - Usuario: `canela`
-  - Contraseña: `canela123`
-  - Base de datos: `canela_miel`
+  - Usuario: `MYSQL_USER` (por defecto `canela`)
+  - Contraseña: `MYSQL_PASSWORD` (por defecto `cambia_esta_clave`)
+  - Base de datos: `MYSQL_DATABASE` (por defecto `canela_miel`)
 
 > `docker compose down -v` **borra el volumen y todos los datos**. Usa `docker compose down` para apagar sin perder nada.
 
@@ -49,6 +67,8 @@ cd backend
 
 - API: <http://localhost:8080>
 - Swagger: <http://localhost:8080/swagger-ui.html>
+
+> El backend lee el `.env` de la raíz. Si falta, no arranca y muestra `Could not resolve placeholder 'DB_PASSWORD'`: vuelve al paso 1.
 
 ### 4. Frontend
 
@@ -66,7 +86,7 @@ npm.cmd run dev
 
 ## Usuarios de prueba
 
-Se crean al arrancar el backend (Fase 2).
+Se crean al arrancar el backend con la base vacía.
 
 | Rol | Correo | Contraseña | Nota |
 |---|---|---|---|
@@ -112,13 +132,14 @@ El stock se descuenta al crear y se devuelve al eliminar. Los estados solo avanz
 
 - [Documento de integración](docs/integracion/documento-integracion.md)
 - [ERS final](docs/ers/ERS-Canela-y-Miel.md)
-- Manual de usuario y reporte de cobertura: pendientes (los prepara la otra integrante).
+- [Manual de usuario](docs/Manual-de-usuario-Canela-y-Miel.docx) (capturas por actualizar)
+- Reporte de cobertura de testing: pendiente (lo prepara la otra integrante).
 
 ## Estructura
 
 ```
 canela-y-miel/
-├─ base/                  Referencia del curso (no se edita ni se entrega)
+├─ base/                  Referencia del curso (en .gitignore: no se versiona ni se entrega)
 ├─ backend/               Spring Boot 3 + Java 17 + Maven
 ├─ frontend/              React 18 + Vite + React Router + Bootstrap 5
 ├─ docs/                  Documentos de la entrega (Fase 5)
