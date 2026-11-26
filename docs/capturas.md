@@ -1,6 +1,7 @@
 # Capturas para el manual de usuario y el documento de cobertura
 
-La interfaz quedó **congelada** al cerrar la Fase 8. Toma estas capturas sin cambiar estilos, textos ni datos.
+La interfaz quedó **congelada** al cerrar la Fase 9, incluido el panel de administración y el mostrador.
+Toma estas capturas sin cambiar estilos, textos ni datos.
 Este archivo no reemplaza el manual: es la lista para que Anaís lo actualice.
 
 ## Preparación
